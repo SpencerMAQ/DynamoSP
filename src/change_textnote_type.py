@@ -102,6 +102,8 @@ view_id_collector = FilteredElementCollector(doc).                  \
                     ToElementIds()
 
 text_note_collector = []
+
+# TODO: apparently, this loop actually makes revit go inside the views
 for view_id in view_id_collector:
 
     '''ArgumentException:
