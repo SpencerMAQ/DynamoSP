@@ -211,10 +211,9 @@ if toggle is True:
         uidoc.RefreshActiveView()
 
 
-
-
-# just display the TextNotes if toggle = False
-elif toggle is False:
-    OUT = [text.ToDSType(False) for text in text_note_collector]
-    # OUT = text_note_collector.ToElementIds().Count
-    uidoc.RefreshActiveView()
+# DYNAMO CALLS THIS ANOTHER TRANSACTION?? WTH?
+# # just display the TextNotes if toggle = False
+# elif toggle is False:
+#     OUT = [text.ToDSType(False) for text in text_note_collector]
+#     # OUT = text_note_collector.ToElementIds().Count
+#     uidoc.RefreshActiveView()
