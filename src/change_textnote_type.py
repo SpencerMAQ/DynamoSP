@@ -142,14 +142,6 @@ for view_id in view_id_collector:
         continue
 
 
-
-
-# text_note_collector = view_toggle().   \
-#                         OfCategory(BuiltInCategory.OST_TextNotes)
-
-# OUT = text_note_collector
-# OUT = view_id_collector
-
 if toggle is True:
 
     unchanged_text = []
