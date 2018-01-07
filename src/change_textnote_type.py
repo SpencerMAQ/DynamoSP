@@ -33,8 +33,13 @@ clr.AddReference('RevitServices')
 clr.AddReference('RevitNodes')
 
 from Autodesk.Revit.DB import *
+from Autodesk.Revit.Exceptions import ArgumentException
 from RevitServices.Persistence import DocumentManager
 import Revit
+
+from System.Collections.Generic import List
+# https://msdn.microsoft.com/en-us/library/bb896387%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+from System import Type
 
 clr.ImportExtensions(Revit.Elements)
 
@@ -100,93 +105,131 @@ class MyFailureHandler(IFailuresPreprocessor):
 # -------------- Road map  ------------- #
 
 
-text_note_collector = view_toggle().   \
-                        OfCategory(BuiltInCategory.OST_TextNotes)
+# Drafting, Plan, Section MultiClass list
+view_multi_class_list = List[Type]()
+view_multi_class_list.Add(clr.GetClrType(ViewDrafting))
+view_multi_class_list.Add(clr.GetClrType(ViewPlan))
+view_multi_class_list.Add(clr.GetClrType(ViewSection))
+
+view_multi_class_filter = ElementMulticlassFilter(view_multi_class_list)
+
+# view_col works, text_note_coll doesn't
+view_id_collector = FilteredElementCollector(doc).                  \
+                    WherePasses(view_multi_class_filter).           \
+                    ToElementIds()
+
+text_note_collector = []
+for view_id in view_id_collector:
+
+    '''
+    ArgumentException:
+    viewId is not a view. -or- viewId is not valid for element iteration, 
+    because it has no way of representing drawn elements. 
+    Many view templates will fail this check.
+    
+    Probably because the Dynamo Script was catching Sections that 
+    DON'T even exist, so I place it in a try-except instead
+    '''
+    try:
+        inner_note_collector = FilteredElementCollector(doc, view_id)   \
+                    .OfCategory(BuiltInCategory.OST_TextNotes)          \
+                    .ToElements()
+
+    except ArgumentException:
+        continue
+
+    for inner_note in inner_note_collector:
+        text_note_collector.append(inner_note)
+
+
+# text_note_collector = view_toggle().   \
+#                         OfCategory(BuiltInCategory.OST_TextNotes)
 
 OUT = text_note_collector
+# OUT = view_id_collector
 
-if toggle is True:
-
-    unchanged_text = []
-
-    num_of_elements_before = view_toggle().     \
-        OfClass(clr.GetClrType(TextElement)).   \
-        ToElementIds().                         \
-        Count
-
-    with Transaction(doc, 'Change Note Types DYNAMOREVAPI') as t:
-
-        t.Start()
-        # fail_opt = t.GetFailureHandlingOptions()
-        # fail_opt.SetFailuresPreprocessor(MyFailureHandler())
-        # t.SetFailureHandlingOptions(fail_opt)
-
-        for text in text_note_collector:
-
-            text_note_type = text.TextNoteType
-            text_size_param = BuiltInParameter.TEXT_SIZE
-
-            text_size = text_note_type.get_Parameter(text_size_param).AsDouble()
-            text_size = UnitUtils.ConvertFromInternalUnits(text_size,
-                                                           DisplayUnitType.DUT_MILLIMETERS)
-
-            # cancel if the TextNoteType is already ISOCPEUR AND if size within 0.1 - 4.3
-            type_list = IN[2:]
-
-            # if ((text_note_type == type_2 or text_note_type == type_3_5) and
-            #         (0 <= text_size <= 4.2)):
-            # TODO: not yet tested
-            if (text_note_type in type_list) and (0 <= text_size <= 4.3):
-                continue
-
-            if 0.1 <= text_size <= 0.45:
-                # change size to 0.25
-                text.TextNoteType = type_0_25
-                # unchanged_text.append([text, 'Change to 0.25 from {}'.format(text_size)])
-
-            elif 0.45 < text_size <= 0.9:
-                text.TextNoteType = type_0_5
-
-            elif 0.9 < text_size <= 1.4:
-                text.TextNoteType = type_1_0
-
-            elif 1.4 < text_size <= 1.9:
-                text.TextNoteType = type_1_5
-
-            elif 1.9 < text_size <= 2.2:
-                text.TextNoteType = type_2
-
-            elif 2.2 < text_size <= 3.4:
-                text.TextNoteType = type_2_3
-
-            elif 3.4 < text_size <= 4.3:
-                text.TextNoteType = type_3_5
-
-            else:
-                # append the UNchanged textNotes for viewing in Dynamo
-                unchanged_text.append([text, 'Unchanged: probably too large, size={}'.format(text_size)])
-                # symbols.append(text.Symbol)
-
-        num_of_elements_after = view_toggle().                          \
-                                OfClass(clr.GetClrType(TextElement)).   \
-                                ToElementIds().                         \
-                                Count
-
-        # assert that num of TextNotes is the same before and after
-        if num_of_elements_before != num_of_elements_after:
-            t.RollBack()
-            OUT = 'Error Occurred, Some items were deleted'
-            uidoc.RefreshActiveView()
-
-        else:
-            t.Commit()
-            OUT = unchanged_text
-            uidoc.RefreshActiveView()
-
-
-
-
-# just display the TextNotes if toggle = False
-elif toggle is False:
-    OUT = [text.ToDSType(False) for text in text_note_collector]
-    # OUT = text_note_collector.ToElementIds().Count
+# if toggle is True:
+#
+#     unchanged_text = []
+#
+#     num_of_elements_before = view_toggle().     \
+#         OfClass(clr.GetClrType(TextElement)).   \
+#         ToElementIds().                         \
+#         Count
+#
+#     with Transaction(doc, 'Change Note Types DYNAMOREVAPI') as t:
+#
+#         t.Start()
+#         # fail_opt = t.GetFailureHandlingOptions()
+#         # fail_opt.SetFailuresPreprocessor(MyFailureHandler())
+#         # t.SetFailureHandlingOptions(fail_opt)
+#
+#         for text in text_note_collector:
+#
+#             text_note_type = text.TextNoteType
+#             text_size_param = BuiltInParameter.TEXT_SIZE
+#
+#             text_size = text_note_type.get_Parameter(text_size_param).AsDouble()
+#             text_size = UnitUtils.ConvertFromInternalUnits(text_size,
+#                                                            DisplayUnitType.DUT_MILLIMETERS)
+#
+#             # cancel if the TextNoteType is already ISOCPEUR AND if size within 0.1 - 4.3
+#             type_list = IN[2:]
+#
+#             # if ((text_note_type == type_2 or text_note_type == type_3_5) and
+#             #         (0 <= text_size <= 4.2)):
+#             # TODO: not yet tested
+#             if (text_note_type in type_list) and (0 <= text_size <= 4.3):
+#                 continue
+#
+#             if 0.1 <= text_size <= 0.45:
+#                 # change size to 0.25
+#                 text.TextNoteType = type_0_25
+#                 # unchanged_text.append([text, 'Change to 0.25 from {}'.format(text_size)])
+#
+#             elif 0.45 < text_size <= 0.9:
+#                 text.TextNoteType = type_0_5
+#
+#             elif 0.9 < text_size <= 1.4:
+#                 text.TextNoteType = type_1_0
+#
+#             elif 1.4 < text_size <= 1.9:
+#                 text.TextNoteType = type_1_5
+#
+#             elif 1.9 < text_size <= 2.2:
+#                 text.TextNoteType = type_2
+#
+#             elif 2.2 < text_size <= 3.4:
+#                 text.TextNoteType = type_2_3
+#
+#             elif 3.4 < text_size <= 4.3:
+#                 text.TextNoteType = type_3_5
+#
+#             else:
+#                 # append the UNchanged textNotes for viewing in Dynamo
+#                 unchanged_text.append([text, 'Unchanged: probably too large, size={}'.format(text_size)])
+#                 # symbols.append(text.Symbol)
+#
+#         num_of_elements_after = view_toggle().                          \
+#                                 OfClass(clr.GetClrType(TextElement)).   \
+#                                 ToElementIds().                         \
+#                                 Count
+#
+#         # assert that num of TextNotes is the same before and after
+#         if num_of_elements_before != num_of_elements_after:
+#             t.RollBack()
+#             OUT = 'Error Occurred, Some items were deleted'
+#             uidoc.RefreshActiveView()
+#
+#         else:
+#             t.Commit()
+#             OUT = unchanged_text
+#             uidoc.RefreshActiveView()
+#
+#
+#
+#
+# # just display the TextNotes if toggle = False
+# elif toggle is False:
+#     OUT = [text.ToDSType(False) for text in text_note_collector]
+#     # OUT = text_note_collector.ToElementIds().Count
