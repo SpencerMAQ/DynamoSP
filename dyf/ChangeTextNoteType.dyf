@@ -1,0 +1,248 @@
+<Workspace Version="1.3.1.1736" X="449.622870670902" Y="272.122018097552" zoom="0.813526754504026" ScaleFactor="1" Name="ChangeTextNoteType" Description="First Toggle: &#xD;&#xA;True = Change the TextNoteTypes, False = Simply View the TextNotes &#xD;&#xA;&#xD;&#xA;Second Toggle: &#xD;&#xA;True = Only change for Active views&#xD;&#xA;False = change all types for the entire document" ID="2da352fa-f8ad-4c44-aa71-052edabfe5c3" Category="Faraday.Text">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="TextNoteType" resolvedName="Revit.Elements.TextNoteType" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" type="PythonNodeModels.PythonNode" nickname="Change all Text Types" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="9">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="False" />
+      <PortInfo index="7" default="False" />
+      <PortInfo index="8" default="False" />
+      <Script>import clr
+
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitServices')
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+doc = DocumentManager.Instance.CurrentDBDocument
+uidoc = DocumentManager.Instance.CurrentUIDocument
+
+# True = change types, False = view
+toggle = bool(IN[0])
+
+# toggle: active view only
+active_view_only = bool(IN[1])
+
+# 0.25mm ISO
+type_0_25 = UnwrapElement(IN[2])
+
+# 0.5mm ISO
+type_0_5 = UnwrapElement(IN[3])
+
+# 1.0mm ISO
+type_1_0 = UnwrapElement(IN[4])
+
+# 1.5mm ISO
+type_1_5 = UnwrapElement(IN[5])
+
+# 2.0mm ISO
+type_2 = UnwrapElement(IN[6])
+
+# 2.3mm ISO (from 2.5)
+type_2_3 = UnwrapElement(IN[7])
+
+# 3.5mm ISO (from 4.0)
+type_3_5 = UnwrapElement(IN[8])
+
+
+# -------------- Utilities ------------- #
+
+
+# NOTE: ActiveView only works if you actually go inside the view?
+# not just the sheet?
+def view_toggle():
+    """if True: run only for active view, False: entire doc"""
+    return FilteredElementCollector(doc, doc.ActiveView.Id)                 \
+                    if active_view_only is True                             \
+                    else FilteredElementCollector(doc)
+
+
+class MyFailureHandler(IFailuresPreprocessor):
+
+    def processFailures(failures_accessor):
+        # doc = failures_accessor.GetDocument()
+        failuresAccessor.DeleteAllWarnings()
+
+        return FailureProcessingResult.Continue
+
+# -------------- Utilities ------------- #
+
+
+# -------------- To Do List  ------------- #
+
+# TODO: Check the API for methods for going inside vieports of ViewSheets
+# class: ViewSheet
+# or use a FilteredElementCollector().OfClass(Viewport)
+
+# idea: 
+# for viewport in viewport_collector:
+# 	FilteredElementCOllector(doc, viewport.Id) would return the elements inside 
+
+# -------------- To Do List  ------------- #
+
+# limit to active view first
+# TODO: VERY IMPORTANT
+# LIMIT ONLY TO SHEET VIEWS??? (or exclude sheet views?) (might not be nec)
+
+# old code that gathers 
+text_note_collector = view_toggle().                                        \
+                        OfCategory(BuiltInCategory.OST_TextNotes)
+
+
+if toggle is True:
+    # TransactionManager.Instance.EnsureInTransaction(doc)
+
+    unchanged_text = []
+
+    num_of_elements_before = view_toggle().                                 \
+                                OfClass(clr.GetClrType(TextElement)).       \
+                                ToElementIds().                             \
+                                Count
+
+    with Transaction(doc, 'Change Note Types DYNAMOREVAPI') as t:
+    
+        t.Start()
+        #fail_opt = t.GetFailureHandlingOptions()
+        #fail_opt.SetFailuresPreprocessor(MyFailureHandler())
+        #t.SetFailureHandlingOptions(fail_opt)
+
+        # try:
+        for text in text_note_collector:
+
+            text_note_type  = text.TextNoteType
+            text_size_param = BuiltInParameter.TEXT_SIZE
+
+            text_size       = text_note_type.get_Parameter(text_size_param).AsDouble()
+            text_size       = UnitUtils.ConvertFromInternalUnits(text_size,
+                                                                 DisplayUnitType.DUT_MILLIMETERS)
+                                                                 
+            # cancel if the TextNoteType is already ISOCPEUR AND if size within 0.1 - 4.2
+            if ((text_note_type == type_2 or text_note_type == type_3_5) and
+            			(0 &lt;= text_size &lt;= 4.2)):
+            	continue
+
+            if 0.1 &lt;= text_size &lt;= 0.45:
+            # change size to 0.25
+                text.TextNoteType = type_0_25
+                # unchanged_text.append([text, 'Change to 0.25 from {}'.format(text_size)])
+                # unchanged_text.append([text, 'Change to 0.25 from {}'.format(text_size)])
+
+            elif 0.45 &lt; text_size &lt;= 0.9:
+                text.TextNoteType = type_0_5
+                # unchanged_text.append([text, 'Changed to 0.5 from {}'.format(text_size)])
+
+            elif 0.9 &lt; text_size &lt;= 1.4:
+                text.TextNoteType = type_1_0
+                # unchanged_text.append([text, 'Changed to 1.0 from {}'.format(text_size)])
+
+            elif 1.4 &lt; text_size &lt;= 1.9:
+                text.TextNoteType = type_1_5
+                # unchanged_text.append([text, 'Changed to 1.5 from {}'.format(text_size)])
+
+            elif 1.9 &lt; text_size &lt;= 2.2:
+                text.TextNoteType = type_2
+                # unchanged_text.append([text, 'Changed to 2.0 from {}'.format(text_size)])
+
+            elif 2.2 &lt; text_size &lt;= 3.4:
+                text.TextNoteType = type_2_3
+                # unchanged_text.append([text, 'Changed to 2.3 from {}'.format(text_size)])
+
+            elif 3.4 &lt; text_size &lt;= 4.3:
+                text.TextNoteType = type_3_5
+                # unchanged_text.append([text, 'Changed to 3.5 from {}'.format(text_size)])
+
+            else:
+                # append the UNchanged textNotes for viewing in Dynamo
+                unchanged_text.append([text, 'Unchanged: probably too large, size={}'.format(text_size)])
+                # symbols.append(text.Symbol)
+
+        num_of_elements_after = view_toggle().                              \
+                                    OfClass(clr.GetClrType(TextElement)).   \
+                                    ToElementIds().                         \
+                                    Count
+
+        # assert that num of TextNotes is the same before and after
+        if num_of_elements_before != num_of_elements_after:
+            t.RollBack()
+            OUT = 'Error Occurred, Some items were deleted'
+            uidoc.RefreshActiveView()
+
+        else:
+            t.Commit()
+            OUT = unchanged_text
+            uidoc.RefreshActiveView()
+
+    # TransactionManager.Instance.TransactionTaskDone()
+
+
+
+
+# just display the TextNotes if toggle = False
+elif toggle is False:
+    OUT = [ text.ToDSType(False) for text in text_note_collector ]
+    #OUT = text_note_collector.ToElementIds().Count
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="384cc6af-bf79-40df-a9bf-1d2886a5a08f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-276.029887311474" y="-426.961385988245" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// Run Toggle&#xD;&#xA;_run: bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="898b120a-0c1e-404f-bcf9-06d6c2b9f903" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-400.029887311474" y="-309.501109618509" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// Active view or Entire doc&#xD;&#xA;_active_or_doc: bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="a5d6a0c0-98b1-4cbe-b2f2-78adda102668" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-763.029887311474" y="-205.747248210723" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// TextNoteType 1 (basis, i.e. other TextNotes will change to this type)&#xD;&#xA;_type1: TextNoteType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="91748ea0-165f-406f-8e3e-8bcb5065340b" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="470" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="3bd3e233-33f7-4121-90d0-25fe2aebe6c6" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-334.029887311474" y="-112.607769785306" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// TextNoteType 2&#xD;&#xA;_type2: TextNoteType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0f973d9b-b30c-42c7-94e3-31d46a159e36" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-334.029887311474" y="-11.9590191545374" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// TextNoteType 3&#xD;&#xA;_type3: TextNoteType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="42819590-cd6c-4501-8116-f18ac2dad962" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-334.029887311474" y="59.9967920185715" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// TextNoteType 4&#xD;&#xA;_type4: TextNoteType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="97eae241-bea4-43d0-ba1f-21ffb03b3a95" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-334.029887311474" y="139.965232638149" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// TextNoteType 5&#xD;&#xA;_type5: TextNoteType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="53195b30-4548-4d05-896c-ca03914789ee" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-334.029887311474" y="227.126523117271" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// TextNoteType 6&#xD;&#xA;_type6: TextNoteType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="28c58853-8539-47e2-b20f-9b0b8eb1ed86" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-334.029887311474" y="312.790118023398" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// TextNoteType 7&#xD;&#xA;_type7: TextNoteType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" start_index="0" end="91748ea0-165f-406f-8e3e-8bcb5065340b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="384cc6af-bf79-40df-a9bf-1d2886a5a08f" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="898b120a-0c1e-404f-bcf9-06d6c2b9f903" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a5d6a0c0-98b1-4cbe-b2f2-78adda102668" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3bd3e233-33f7-4121-90d0-25fe2aebe6c6" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0f973d9b-b30c-42c7-94e3-31d46a159e36" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="42819590-cd6c-4501-8116-f18ac2dad962" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="97eae241-bea4-43d0-ba1f-21ffb03b3a95" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="53195b30-4548-4d05-896c-ca03914789ee" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="7" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="28c58853-8539-47e2-b20f-9b0b8eb1ed86" start_index="0" end="9e9ea5ab-c1d6-43c1-861d-1b8acf0f94e6" end_index="8" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="2967.22148968639" eyeY="10563.0385656987" eyeZ="-2523.45509418402" lookX="-14.2092826551366" lookY="-10563.0385656987" lookZ="1180.92457660589" upX="0.0119655597954988" upY="0.10452850908041" upZ="-0.99444991350174" />
+  </Cameras>
+</Workspace>
