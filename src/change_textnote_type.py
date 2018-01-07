@@ -1,3 +1,30 @@
+# Faraday: A Dynamo Plugin (GPL) started by Michael Spencer Quinto
+# This file is part of Faraday.
+#
+# You should have received a copy of the GNU General Public License
+# along with Faraday; If not, see <http://www.gnu.org/licenses/>.
+#
+# @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+
+"""Changes the TextNoteTypes of all TextNotes inside the document
+provided that the TextNotes are inside any of the following View Classes:
+    ViewDrafting
+    ViewPlan
+    ViewSection
+
+    Args:
+        _run:           (bool) True to change the Note Types,
+                        False to simply view the items
+        _active_or_doc: (bool) True to change only for the active view,
+                        False to change for entire doc
+        _type1:         (TextNoteType) first basis, i.e. other note types
+                        will be changed to this
+
+    Returns:
+        OUT:            if _run = True, all unchanged TextNotes with their Id
+                        if _run = False, all TextNotes inside the doc
+
+"""
 import clr
 
 clr.AddReference('RevitAPI')
