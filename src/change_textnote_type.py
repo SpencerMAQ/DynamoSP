@@ -1,13 +1,11 @@
 import clr
 
 clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
 clr.AddReference('RevitServices')
-from RevitServices.Persistence import DocumentManager
-from RevitServices.Transactions import TransactionManager
-
 clr.AddReference('RevitNodes')
+
+from Autodesk.Revit.DB import *
+from RevitServices.Persistence import DocumentManager
 import Revit
 
 clr.ImportExtensions(Revit.Elements)
@@ -81,6 +79,14 @@ class MyFailureHandler(IFailuresPreprocessor):
 # limit to active view first
 # TODO: VERY IMPORTANT: LIMIT ONLY TO VIEWS which are not sheets
 
+# -------------- Road map  ------------- #
+
+# create a view_collector which excludes TableViews, View3D and ViewSheets
+# i.e. we will re-oder even Views which are not placed in ViewSheets
+
+# -------------- Road map  ------------- #
+
+# view_toggle() = False would only filter
 text_note_collector = view_toggle(). \
     OfCategory(BuiltInCategory.OST_TextNotes)
 
@@ -109,9 +115,12 @@ if toggle is True:
             text_size = UnitUtils.ConvertFromInternalUnits(text_size,
                                                            DisplayUnitType.DUT_MILLIMETERS)
 
-            # cancel if the TextNoteType is already ISOCPEUR AND if size within 0.1 - 4.2
-            if ((text_note_type == type_2 or text_note_type == type_3_5) and
-                    (0 <= text_size <= 4.2)):
+            # cancel if the TextNoteType is already ISOCPEUR AND if size within 0.1 - 4.3
+            type_list = IN[2:]
+
+            # if ((text_note_type == type_2 or text_note_type == type_3_5) and
+            #         (0 <= text_size <= 4.2)):
+            if (text_note_type in type_list) and (0 <= text_size <= 4.3):
                 continue
 
             if 0.1 <= text_size <= 0.45:
