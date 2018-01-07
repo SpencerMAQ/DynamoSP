@@ -50,8 +50,8 @@ type_3_5 = UnwrapElement(IN[8])
 # not just the sheet?
 def view_toggle():
     """if True: run only for active view, False: entire doc"""
-    return FilteredElementCollector(doc, doc.ActiveView.Id) \
-        if active_view_only is True \
+    return FilteredElementCollector(doc, doc.ActiveView.Id)     \
+        if active_view_only is True                             \
         else FilteredElementCollector(doc)
 
 
@@ -79,21 +79,18 @@ class MyFailureHandler(IFailuresPreprocessor):
 # -------------- To Do List  ------------- #
 
 # limit to active view first
-# TODO: VERY IMPORTANT
-# LIMIT ONLY TO SHEET VIEWS??? (or exclude sheet views?) (might not be nec)
+# TODO: VERY IMPORTANT: LIMIT ONLY TO VIEWS which are not sheets
 
-# old code that gathers
 text_note_collector = view_toggle(). \
     OfCategory(BuiltInCategory.OST_TextNotes)
 
 if toggle is True:
-    # TransactionManager.Instance.EnsureInTransaction(doc)
 
     unchanged_text = []
 
-    num_of_elements_before = view_toggle(). \
-        OfClass(clr.GetClrType(TextElement)). \
-        ToElementIds(). \
+    num_of_elements_before = view_toggle().     \
+        OfClass(clr.GetClrType(TextElement)).   \
+        ToElementIds().                         \
         Count
 
     with Transaction(doc, 'Change Note Types DYNAMOREVAPI') as t:
@@ -103,7 +100,6 @@ if toggle is True:
         # fail_opt.SetFailuresPreprocessor(MyFailureHandler())
         # t.SetFailureHandlingOptions(fail_opt)
 
-        # try:
         for text in text_note_collector:
 
             text_note_type = text.TextNoteType
@@ -122,41 +118,34 @@ if toggle is True:
                 # change size to 0.25
                 text.TextNoteType = type_0_25
                 # unchanged_text.append([text, 'Change to 0.25 from {}'.format(text_size)])
-                # unchanged_text.append([text, 'Change to 0.25 from {}'.format(text_size)])
 
             elif 0.45 < text_size <= 0.9:
                 text.TextNoteType = type_0_5
-                # unchanged_text.append([text, 'Changed to 0.5 from {}'.format(text_size)])
 
             elif 0.9 < text_size <= 1.4:
                 text.TextNoteType = type_1_0
-                # unchanged_text.append([text, 'Changed to 1.0 from {}'.format(text_size)])
 
             elif 1.4 < text_size <= 1.9:
                 text.TextNoteType = type_1_5
-                # unchanged_text.append([text, 'Changed to 1.5 from {}'.format(text_size)])
 
             elif 1.9 < text_size <= 2.2:
                 text.TextNoteType = type_2
-                # unchanged_text.append([text, 'Changed to 2.0 from {}'.format(text_size)])
 
             elif 2.2 < text_size <= 3.4:
                 text.TextNoteType = type_2_3
-                # unchanged_text.append([text, 'Changed to 2.3 from {}'.format(text_size)])
 
             elif 3.4 < text_size <= 4.3:
                 text.TextNoteType = type_3_5
-                # unchanged_text.append([text, 'Changed to 3.5 from {}'.format(text_size)])
 
             else:
                 # append the UNchanged textNotes for viewing in Dynamo
                 unchanged_text.append([text, 'Unchanged: probably too large, size={}'.format(text_size)])
                 # symbols.append(text.Symbol)
 
-        num_of_elements_after = view_toggle(). \
-            OfClass(clr.GetClrType(TextElement)). \
-            ToElementIds(). \
-            Count
+        num_of_elements_after = view_toggle().                          \
+                                OfClass(clr.GetClrType(TextElement)).   \
+                                ToElementIds().                         \
+                                Count
 
         # assert that num of TextNotes is the same before and after
         if num_of_elements_before != num_of_elements_after:
@@ -168,8 +157,6 @@ if toggle is True:
             t.Commit()
             OUT = unchanged_text
             uidoc.RefreshActiveView()
-
-            # TransactionManager.Instance.TransactionTaskDone()
 
 
 
