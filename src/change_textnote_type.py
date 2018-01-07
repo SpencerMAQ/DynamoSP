@@ -215,12 +215,12 @@ if toggle is True:
         if num_of_elements_before != num_of_elements_after:
             t.RollBack()
             OUT = 'Error Occurred, Some items were deleted'
-            uidoc.RefreshActiveView()
 
         else:
             t.Commit()
             OUT = unchanged_text
-            uidoc.RefreshActiveView()
+
+        uidoc.RefreshActiveView()
 
 
 
@@ -229,3 +229,4 @@ if toggle is True:
 elif toggle is False:
     OUT = [text.ToDSType(False) for text in text_note_collector]
     # OUT = text_note_collector.ToElementIds().Count
+    uidoc.RefreshActiveView()
