@@ -163,10 +163,6 @@ if toggle is True:
 
             type_list = IN[2:]
 
-            # cancel if the TextNoteType is already ISOCPEUR AND if size within 0.1 - 4.3
-            # if ((text_note_type == type_2 or text_note_type == type_3_5) and
-            #         (0 <= text_size <= 4.2)):
-            # TODO: not yet tested
             if (text_note_type in type_list) and (0 <= text_size <= 4.3):
                 continue
 
