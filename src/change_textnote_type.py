@@ -36,6 +36,8 @@ from RevitServices.Persistence import DocumentManager
 import Revit
 
 from System.Collections.Generic import List
+# https://msdn.microsoft.com/en-us/library/bb896387%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+from System import Type
 
 clr.ImportExtensions(Revit.Elements)
 
@@ -103,7 +105,7 @@ class MyFailureHandler(IFailuresPreprocessor):
 # -------------- Road map  ------------- #
 
 # Drafting, Plan, Section MultiClass list
-view_multi_class_list = List[View]()
+view_multi_class_list = List[Type]()
 view_multi_class_list.Add(clr.GetClrType(ViewDrafting))
 view_multi_class_list.Add(clr.GetClrType(ViewPlan))
 view_multi_class_list.Add(clr.GetClrType(ViewSection))
