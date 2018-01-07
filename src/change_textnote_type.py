@@ -8,6 +8,8 @@ from Autodesk.Revit.DB import *
 from RevitServices.Persistence import DocumentManager
 import Revit
 
+from System.Collections.Generic import List
+
 clr.ImportExtensions(Revit.Elements)
 
 doc = DocumentManager.Instance.CurrentDBDocument
@@ -44,13 +46,15 @@ type_3_5 = UnwrapElement(IN[8])
 # -------------- Utilities ------------- #
 
 
-# NOTE: ActiveView only works if you actually go inside the view?
-# not just the sheet?
-def view_toggle():
+# NOTE: ActiveView only works if you actually go inside the viewport
+# i.e., not just the sheet
+def view_toggle(view_collector_ids=None):
     """if True: run only for active view, False: entire doc"""
+
+    # FilteredElementCollector also takes in ICollection of ElementIds
     return FilteredElementCollector(doc, doc.ActiveView.Id)     \
         if active_view_only is True                             \
-        else FilteredElementCollector(doc)
+        else FilteredElementCollector(doc, view_collector_ids)
 
 
 class MyFailureHandler(IFailuresPreprocessor):
@@ -64,21 +68,6 @@ class MyFailureHandler(IFailuresPreprocessor):
 # -------------- Utilities ------------- #
 
 
-# -------------- To Do List  ------------- #
-
-# TODO: Check the API for methods for going inside vieports of ViewSheets
-# class: ViewSheet
-# or use a FilteredElementCollector().OfClass(Viewport)
-
-# idea:
-# for viewport in viewport_collector:
-# 	FilteredElementCOllector(doc, viewport.Id) would return the elements inside
-
-# -------------- To Do List  ------------- #
-
-# limit to active view first
-# TODO: VERY IMPORTANT: LIMIT ONLY TO VIEWS which are not sheets
-
 # -------------- Road map  ------------- #
 
 # create a view_collector which excludes TableViews, View3D and ViewSheets
@@ -86,9 +75,21 @@ class MyFailureHandler(IFailuresPreprocessor):
 
 # -------------- Road map  ------------- #
 
+# Drafting, Plan, Section MultiClass list
+view_multi_class_list = List[View]()
+view_multi_class_list.Add(clr.GetClrType(ViewDrafting))
+view_multi_class_list.Add(clr.GetClrType(ViewPlan))
+view_multi_class_list.Add(clr.GetClrType(ViewSection))
+
+view_multi_class_filter = ElementMulticlassFilter(view_multi_class_list)
+
+view_collector = FilteredElementCollector(doc).                         \
+                    WherePasses(view_multi_class_filter).               \
+                    ToElementIds()
+
 # view_toggle() = False would only filter
-text_note_collector = view_toggle(). \
-    OfCategory(BuiltInCategory.OST_TextNotes)
+text_note_collector = view_toggle(view_collector_ids=view_collector).   \
+                        OfCategory(BuiltInCategory.OST_TextNotes)
 
 if toggle is True:
 
@@ -120,6 +121,7 @@ if toggle is True:
 
             # if ((text_note_type == type_2 or text_note_type == type_3_5) and
             #         (0 <= text_size <= 4.2)):
+            # TODO: not yet tested
             if (text_note_type in type_list) and (0 <= text_size <= 4.3):
                 continue
 
