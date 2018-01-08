@@ -96,7 +96,6 @@ class MyFailureHandler(IFailuresPreprocessor):
 2018_01_008 - CHANGE TEXT EVEN IF YOU ARE AT VIEWHSEET LEVEL
 I.E. GET ALL VIEWPORTS AND ALL ELEMENTS INSIDE VIEWPORTS
 
-fOR vIEW ELEMENTS MODE - SHOW ALL THE FONTS
 
 SHOW NOTIFICATIONS FOR CHANGED TEXT
 	> FROM WHAT TO WHAT (SIZE, FONT)
@@ -107,12 +106,26 @@ SHOW NOTIFICATIONS FOR CHANGED TEXT
 
 # -------------- Road map  ------------- #
 
+# -------------- Experimental  ------------- #
+viewport_collector = view_toggle().OfCategory(BuiltInCategory.OST_Sheets).ToElementIds()
+
+view_sheet_note_collector = view_toggle().OfCategory(BuiltInCategory.OST_TextNotes)
+
+text_note_collector = []
+for viewport in viewport_collector:
 
 
 
-text_note_collector = view_toggle().\
-                        OfCategory(BuiltInCategory.OST_TextNotes)
+    inner_note_collector = FilteredElementCollector(doc, viewport.Id)       \
+                                .OfCategory(BuiltInCategory.OST_TextNotes)
+    for inner_note in inner_note_collector:
+        text_note_collector.append(inner_note)
 
+
+# text_note_collector = view_toggle().\
+#                         OfCategory(BuiltInCategory.OST_TextNotes)
+
+# -------------- Experimental  ------------- #
 
 if toggle is True:
 
@@ -123,7 +136,7 @@ if toggle is True:
                                 ToElementIds().                         \
                                 Count
 
-    with Transaction(doc, 'Change Note Types DYNAMOREVAPI') as t:
+    with Transaction(doc, 'FARADAY: Change Note Types DYNAMOREVAPI') as t:
 
         t.Start()
 
@@ -150,12 +163,23 @@ if toggle is True:
                     text.TextNoteType = type_0_25
                 elif text_bold_param_original:
                     text.TextNoteType = type_0_25_b
+                # big problem with text_note_type.Name, apparently, can't access name in RevAPI
+                unchanged_text.append(
+                    'Size {} to 0.25 | From type {} to {}'.format(text_size,
+                                                                  text_note_type,
+                                                                  text.TextNoteType)
+                )
 
             elif 0.45 < text_size <= 0.9:
                 if not text_bold_param_original:
                     text.TextNoteType = type_0_5
                 elif text_bold_param_original:
                     text.TextNoteType = type_0_5_b
+                unchanged_text.append(
+                    'Size {} to 0.25 | From type {} to {}'.format(text_size,
+                                                                  text_note_type,
+                                                                  text.TextNoteType)
+                )
 
 
             elif 0.9 < text_size <= 1.4:
@@ -163,24 +187,44 @@ if toggle is True:
                     text.TextNoteType = type_1_0
                 elif text_bold_param_original:
                     text.TextNoteType = type_1_5_b
+                unchanged_text.append(
+                    'Size {} to 0.25 | From type {} to {}'.format(text_size,
+                                                                  text_note_type,
+                                                                  text.TextNoteType)
+                )
 
             elif 1.4 < text_size <= 1.9:
                 if not text_bold_param_original:
                     text.TextNoteType = type_1_5
                 elif text_bold_param_original:
                     text.TextNoteType = type_1_5_b
+                unchanged_text.append(
+                    'Size {} to 0.25 | From type {} to {}'.format(text_size,
+                                                                  text_note_type,
+                                                                  text.TextNoteType)
+                )
 
             elif 1.9 < text_size <= 2.2:
                 if not text_bold_param_original:
                     text.TextNoteType = type_2_0
                 elif text_bold_param_original:
                     text.TextNoteType = type_2_0_b
+                unchanged_text.append(
+                    'Size {} to 0.25 | From type {} to {}'.format(text_size,
+                                                                  text_note_type,
+                                                                  text.TextNoteType)
+                )
 
             elif 2.2 < text_size <= 3.4:
                 if not text_bold_param_original:
                     text.TextNoteType = type_2_3
                 elif text_bold_param_original:
                     text.TextNoteType = type_2_3_b
+                unchanged_text.append(
+                    'Size {} to 0.25 | From type {} to {}'.format(text_size,
+                                                                  text_note_type,
+                                                                  text.TextNoteType)
+                )
 
 
             elif 3.4 < text_size <= 4.3:
@@ -188,10 +232,16 @@ if toggle is True:
                     text.TextNoteType = type_3_5
                 elif text_bold_param_original:
                     text.TextNoteType = type_3_5_b
+                unchanged_text.append(
+                    'Size {} to 0.25 | From type {} to {}'.format(text_size,
+                                                                  text_note_type,
+                                                                  text.TextNoteType)
+                )
 
             else:
-                unchanged_text.append([text, 'Unchanged: probably too large, size={}'.format(text_size)])
-                # symbols.append(text.Symbol)
+                unchanged_text.append(
+                    [text, 'Unchanged: probably too large, size={}'.format(text_size)]
+                )
 
         num_of_elements_after = view_toggle().                          \
                                 OfClass(clr.GetClrType(TextElement)).   \
