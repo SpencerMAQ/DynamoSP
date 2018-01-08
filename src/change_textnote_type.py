@@ -11,6 +11,7 @@ provided that the TextNotes are inside any of the following View Classes:
     ViewDrafting
     ViewPlan
     ViewSection
+
     Args:
         _run:           (bool) True to change the Note Types,
                         False to simply view the items
@@ -18,9 +19,11 @@ provided that the TextNotes are inside any of the following View Classes:
                         False to change for entire doc
         _type1:         (TextNoteType) first basis, i.e. other note types
                         will be changed to this
+
     Returns:
         OUT:            if _run = True, all unchanged TextNotes with their Id
                         if _run = False, all TextNotes inside the doc
+
 """
 
 import clr
@@ -35,8 +38,8 @@ import Revit
 
 clr.ImportExtensions(Revit.Elements)
 
-doc = DocumentManager.Instance.CurrentDBDocument
-uidoc = DocumentManager.Instance.CurrentUIDocument
+doc                 = DocumentManager.Instance.CurrentDBDocument
+uidoc               = DocumentManager.Instance.CurrentUIDocument
 
 # True = change types, False = view
 toggle              = bool(IN[0])
@@ -143,7 +146,7 @@ if toggle is True:
             text_note_type = text.TextNoteType
             text_size_param = BuiltInParameter.TEXT_SIZE
 
-            text_size = text_note_type.get_Parameter(text_size_param).AsDouble()
+            text_size = text_note_type.get_Parameter(BuiltInParameter.TEXT_SIZE).AsDouble()
             text_size = UnitUtils.ConvertFromInternalUnits(text_size,
                                                            DisplayUnitType.DUT_MILLIMETERS)
             text_bold_param_original = text_note_type \
