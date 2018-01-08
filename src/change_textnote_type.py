@@ -212,7 +212,7 @@ if toggle is True:
 
         uidoc.RefreshActiveView()
 
-
+# NOTE: to self: (DO NOT DELETE, IMP): ToDSType() may be causing the accidental deletions
 # DYNAMO CALLS THIS ANOTHER TRANSACTION?? WTH?
 # # just display the TextNotes if toggle = False
 # elif toggle is False:
