@@ -108,6 +108,8 @@ SHOW NOTIFICATIONS FOR CHANGED TEXT
 # -------------- Road map  ------------- #
 
 
+
+
 text_note_collector = view_toggle().\
                         OfCategory(BuiltInCategory.OST_TextNotes)
 
@@ -210,5 +212,22 @@ if toggle is True:
 # Note to self: ToDSType may be causing accidental deletion of the Texts
 # because maybe they're 'OWNBED by Dynamo????' (not really sure)
 # Dynamo CALLS THIS A NEW TRANSACTION???!!
+
 elif toggle is False:
-    OUT = text_note_collector
+    text_info_collector = []
+    for text in text_note_collector:
+        text_note_type = text.TextNoteType
+
+        text_size = text_note_type.get_Parameter(BuiltInParameter.TEXT_SIZE).AsDouble()
+        text_size = UnitUtils.ConvertFromInternalUnits(text_size,
+                                                       DisplayUnitType.DUT_MILLIMETERS)
+
+        text_note_font = text_note_type.get_Parameter(BuiltInParameter.TEXT_FONT).AsString()
+
+        text_info_collector.append(
+            'Id: {}, Size: {}, Font: {}'.format(text.Id,
+                                                text_size,
+                                                text_note_font)
+        )
+
+    OUT = text_info_collector
