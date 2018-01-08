@@ -6,7 +6,7 @@
 #
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
-"""Changes the TextNoteTypes of all TextNotes inside the document
+"""Changes the TextNoteTypes of all TextNotes inside a VIEWSHEET
 provided that the TextNotes are inside any of the following View Classes:
     ViewDrafting
     ViewPlan
@@ -144,7 +144,6 @@ if toggle is True:
         for text in text_note_collector:
 
             text_note_type = text.TextNoteType
-            text_size_param = BuiltInParameter.TEXT_SIZE
 
             text_size = text_note_type.get_Parameter(BuiltInParameter.TEXT_SIZE).AsDouble()
             text_size = UnitUtils.ConvertFromInternalUnits(text_size,
@@ -227,5 +226,6 @@ if toggle is True:
 
 # Note to self: ToDSType may be causing accidental deletion of the Texts
 # because maybe they're 'OWNBED by Dynamo????' (not really sure)
+# Dynamo CALLS THIS A NEW TRANSACTION???!!
 elif toggle is False:
     OUT = text_note_collector
