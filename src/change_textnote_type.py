@@ -41,31 +41,17 @@ clr.ImportExtensions(Revit.Elements)
 doc                 = DocumentManager.Instance.CurrentDBDocument
 uidoc               = DocumentManager.Instance.CurrentUIDocument
 
-# True = change types, False = view
-toggle              = bool(IN[0])
 
-# toggle: active view only
-active_view_only    = bool(IN[1])
+toggle              = bool(IN[0])           # True = change types, False = view
 
-# 0.25mm ISO
-type_0_25           = UnwrapElement(IN[2])
+active_view_only    = bool(IN[1])           # toggle: active view only
 
-# 0.5mm ISO
+type_0_25           = UnwrapElement(IN[2])  # 0.25mm ISO
 type_0_5            = UnwrapElement(IN[3])
-
-# 1.0mm ISO
 type_1_0            = UnwrapElement(IN[4])
-
-# 1.5mm ISO
 type_1_5            = UnwrapElement(IN[5])
-
-# 2.0mm ISO
 type_2              = UnwrapElement(IN[6])
-
-# 2.3mm ISO (from 2.5)
 type_2_3            = UnwrapElement(IN[7])
-
-# 3.5mm ISO (from 4.0)
 type_3_5            = UnwrapElement(IN[8])
 
 # -------------- Bold Types ------------- #
@@ -78,12 +64,10 @@ type_2_b            = UnwrapElement(IN[13])
 type_2_3_b          = UnwrapElement(IN[14])
 type_3_5_b          = UnwrapElement(IN[15])
 
-
 # -------------- Bold Types ------------- #
 
 
 # -------------- Utilities ------------- #
-
 
 # NOTE: ActiveView only works if you actually go inside the viewport
 # i.e., not just the sheet
@@ -154,7 +138,6 @@ if toggle is True:
             type_list = IN[2:]
             text_note_font = text_note_type.get_Parameter(BuiltInParameter.TEXT_FONT).AsString()
 
-            # cancel if the TextNoteType is already ISOCPEUR AND if size within 0.1 - 4.3
             if ('ISOCPEUR' in text_note_font) and (0 <= text_size <= 4.3):
                 unchanged_text.append('Text is already ISOCPEUR')
                 continue
