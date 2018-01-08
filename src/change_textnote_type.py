@@ -50,7 +50,7 @@ type_0_25           = UnwrapElement(IN[2])  # 0.25mm ISO
 type_0_5            = UnwrapElement(IN[3])
 type_1_0            = UnwrapElement(IN[4])
 type_1_5            = UnwrapElement(IN[5])
-type_2              = UnwrapElement(IN[6])
+type_2_0            = UnwrapElement(IN[6])
 type_2_3            = UnwrapElement(IN[7])
 type_3_5            = UnwrapElement(IN[8])
 
@@ -60,7 +60,7 @@ type_0_25_b         = UnwrapElement(IN[9])
 type_0_5_b          = UnwrapElement(IN[10])
 type_1_0_b          = UnwrapElement(IN[11])
 type_1_5_b          = UnwrapElement(IN[12])
-type_2_b            = UnwrapElement(IN[13])
+type_2_0_b          = UnwrapElement(IN[13])
 type_2_3_b          = UnwrapElement(IN[14])
 type_3_5_b          = UnwrapElement(IN[15])
 
@@ -132,8 +132,8 @@ if toggle is True:
             text_size = text_note_type.get_Parameter(BuiltInParameter.TEXT_SIZE).AsDouble()
             text_size = UnitUtils.ConvertFromInternalUnits(text_size,
                                                            DisplayUnitType.DUT_MILLIMETERS)
-            text_bold_param_original = text_note_type \
-                                        .get_Parameter(BuiltInParameter.TEXT_STYLE_BOLD) \
+            text_bold_param_original = text_note_type                                       \
+                                        .get_Parameter(BuiltInParameter.TEXT_STYLE_BOLD)    \
                                         .AsInteger()
             type_list = IN[2:]
             text_note_font = text_note_type.get_Parameter(BuiltInParameter.TEXT_FONT).AsString()
@@ -170,9 +170,9 @@ if toggle is True:
 
             elif 1.9 < text_size <= 2.2:
                 if not text_bold_param_original:
-                    text.TextNoteType = type_2
+                    text.TextNoteType = type_2_0
                 elif text_bold_param_original:
-                    text.TextNoteType = type_2_b
+                    text.TextNoteType = type_2_0_b
 
             elif 2.2 < text_size <= 3.4:
                 if not text_bold_param_original:
