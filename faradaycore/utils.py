@@ -38,6 +38,14 @@ def run_python_3(command='py', stdin=None,
     using subprocess.
     By default, stdout=PIPE, i.e. returns the output
     """
+    # TODO: use this instead
+    # https://stackoverflow.com/questions/17665124/call-python3-code-from-python2-code
+    # idea: open a temp file for writing, save as .py, execute the code in Popen, delete the file, use uuid
+    # to ensure no conflicts with other filenames
+
+    # get shortened version
+    __temp_py_filename = str(uuid4()).split('-')[0]
+
     # py3 = subprocess.Popen(command,stdin=stdin,stdout=stdout,stderr=stderr,shell=shell)
     py3 = subprocess.Popen('py')
     # return py3.communicate()
