@@ -35,17 +35,21 @@ class Transaction:
     t.Rollback() on exceptions
 
     Args:
-        _doc = Revit Document
-        name = Transaction name
+        _doc        = Revit Document
+        name        = Transaction name
+        production  = (boolean) [default = True] used for debugging purposes,
+                        if set to True, will always do Rollback(), i.e. production code
+                        if set to False, Rollback() will not be called
     """
-    def __init__(self, _doc=None, name=''):
+    def __init__(self, _doc=None, name='', production=True):
         self.transaction = DB.Transaction(_doc, name)
+        self.production = production
 
     def __enter__(self):
         self.transaction.Start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type:
+        if self.production and exc_type:
             self.transaction.RollBack()
         else:
             self.transaction.Commit()
