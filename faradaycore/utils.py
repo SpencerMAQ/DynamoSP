@@ -22,3 +22,21 @@ import subprocess
 from uuid import uuid4
 from functools import wraps
 from time import time
+
+PIPE = subprocess.PIPE
+
+'''
+# TODO: create utilities for calling
+Python 3 code (e.g. PyQt)
+'''
+
+
+def run_python_3(command, stdin=None,
+                 stdout=PIPE, stderr=None,
+                 shell=False):
+    """Runs python 3 strings, e.g. PyQt5
+    using subprocess.
+    By default, stdout=PIPE, i.e. returns the output
+    """
+    py3 = subprocess.Popen(command,stdin=stdin,stdout=stdout,stderr=stderr,shell=shell)
+    py3.communicate()
