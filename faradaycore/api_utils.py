@@ -41,12 +41,13 @@ class Transaction:
                         if set to True, will always do Rollback(), i.e. production code
                         if set to False, Rollback() will not be called
     """
-    def __init__(self, _doc=None, name='', production=True):
-        self.transaction = DB.Transaction(_doc, name)
+    def __init__(self, __doc=None, name='', production=True):
+        self.transaction = DB.Transaction(__doc, name)
         self.production = production
 
     def __enter__(self):
         self.transaction.Start()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.production and exc_type:

@@ -25,7 +25,7 @@ provided that the TextNotes are inside any of the following View Classes:
                         if _run = False, all TextNotes inside the doc
 
 """
-
+# from api_utils import *
 import clr
 
 clr.AddReference('RevitAPI')
