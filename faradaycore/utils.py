@@ -31,12 +31,13 @@ Python 3 code (e.g. PyQt)
 '''
 
 
-def run_python_3(command, stdin=None,
+def run_python_3(command='py', stdin=None,
                  stdout=PIPE, stderr=None,
                  shell=False):
     """Runs python 3 strings, e.g. PyQt5
     using subprocess.
     By default, stdout=PIPE, i.e. returns the output
     """
-    py3 = subprocess.Popen(command,stdin=stdin,stdout=stdout,stderr=stderr,shell=shell)
-    py3.communicate()
+    # py3 = subprocess.Popen(command,stdin=stdin,stdout=stdout,stderr=stderr,shell=shell)
+    py3 = subprocess.Popen('py')
+    # return py3.communicate()
