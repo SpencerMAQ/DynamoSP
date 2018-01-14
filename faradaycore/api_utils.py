@@ -13,23 +13,27 @@ clr.AddReference('RevitAPIUI')
 clr.AddReference('RevitNodes')
 clr.AddReference('RevitServices')
 clr.AddReference('System.Core')
+clr.AddReference('ProtoGeometry')
+clr.AddReference('DSCoreNodes')
 
 import Autodesk.Revit.DB as DB
 import Autodesk.Revit.UI as UI
 import Revit
 import System
+import Autodesk.DesignScript.Geometry as GM
+import DSCore as DSC
 
-from RevitServices.Persistence import DocumentManager
-from RevitServices.Transactions import TransactionManager
+from RevitServices.Persistence import DocumentManager as DM
+from RevitServices.Transactions import TransactionManager as TM
 
 clr.ImportExtensions(Revit.Elements)
 clr.ImportExtensions(Revit.GeometryConversion)
 clr.ImportExtensions(System.Linq)
 
-doc     = DocumentManager.Instance.CurrentDBDocument
-uiapp   = DocumentManager.Instance.CurrentUIApplication
+doc     = DM.Instance.CurrentDBDocument
+uiapp   = DM.Instance.CurrentUIApplication
 app     = uiapp.Application
-uidoc   = DocumentManager.Instance.CurrentUIDocument
+uidoc   = DM.Instance.CurrentUIDocument
 
 class Transaction:
     """Automatically wraps Transactions in
