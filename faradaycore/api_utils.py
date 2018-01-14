@@ -22,7 +22,6 @@ import System
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
-
 clr.ImportExtensions(Revit.Elements)
 clr.ImportExtensions(Revit.GeometryConversion)
 clr.ImportExtensions(System.Linq)
@@ -45,9 +44,11 @@ class Transaction:
                         if set to False, Rollback() will not be called
     """
     def __init__(self,
-                 __doc=None,
+                 __doc=doc,
                  name='',
                  production=True):
+        if not name:
+            raise ValueError('Please provide a transaction name')
         self.transaction = DB.Transaction(__doc, name)
         self.production = production
 
