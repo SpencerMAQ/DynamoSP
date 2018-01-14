@@ -20,14 +20,17 @@ import Revit
 import System
 
 from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
 
-doc     = DocumentManager.Instance.CurrentDBDocument
-uidoc   = DocumentManager.Instance.CurrentUIDocument
 
 clr.ImportExtensions(Revit.Elements)
 clr.ImportExtensions(Revit.GeometryConversion)
 clr.ImportExtensions(System.Linq)
 
+doc     = DocumentManager.Instance.CurrentDBDocument
+uiapp   = DocumentManager.Instance.CurrentUIApplication
+app     = uiapp.Application
+uidoc   = DocumentManager.Instance.CurrentUIDocument
 
 class Transaction:
     """Automatically wraps Transactions in
