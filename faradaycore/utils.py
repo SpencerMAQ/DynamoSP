@@ -23,12 +23,24 @@ from uuid import uuid4
 from functools import wraps
 from time import time
 
+from api_utils import doc, DB
+
 PIPE = subprocess.PIPE
 
 '''
 # TODO: create utilities for calling
 Python 3 code (e.g. PyQt)
 '''
+
+
+# patterned from ladybug-tools: dynosaur
+def unit_conversion():
+    """Convert RevitAPI units (typically feet) to Project units
+    (typically mm)"""
+    doc_units   = doc.GetUnits()
+    length_unit = doc_units.GetFormatOptions(DB.UnitType.UT_Length).DisplayUnits
+
+    return DB.UnitUtils.ConvertFromInternalUnits(1.0, length_unit)
 
 
 def run_python_3(command='py', stdin=None,
