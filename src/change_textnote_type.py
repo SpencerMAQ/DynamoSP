@@ -25,6 +25,10 @@ provided that the TextNotes are inside any of the following View Classes:
                         if _run = False, all TextNotes inside the doc
 
 """
+# TODO: create script that automatically copies files from Dynamo Folder
+# to Git folder
+# TODO: use scripts from utils
+
 # from api_utils import *
 import clr
 

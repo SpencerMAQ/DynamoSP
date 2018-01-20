@@ -18,10 +18,10 @@ clr.AddReference('DSCoreNodes')
 
 import Autodesk.Revit.DB as DB
 import Autodesk.Revit.UI as UI
-import Revit
-import System
-import Autodesk.DesignScript.Geometry as GM
-import DSCore as DSC
+import Revit as Revit
+import System as System
+import Autodesk.DesignScript.Geometry as GEO
+import DSCore as DSCore
 
 from RevitServices.Persistence import DocumentManager as DM
 from RevitServices.Transactions import TransactionManager as TM
