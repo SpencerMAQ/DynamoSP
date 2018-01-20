@@ -1,4 +1,6 @@
-# Faraday: A Dynamo Plugin (GPL) started by Michael Spencer Quinto
+# Faraday: A Dynamo Plugin (GPL)
+# started by Michael Spencer Quinto <https://github.com/SpencerMAQ>
+#
 # This file is part of Faraday.
 #
 # You should have received a copy of the GNU General Public License
