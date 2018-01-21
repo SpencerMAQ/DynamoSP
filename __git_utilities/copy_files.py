@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Faraday: A Dynamo Plugin (GPL)
 # started by Michael Spencer Quinto <https://github.com/SpencerMAQ>
 #
@@ -83,23 +84,49 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
     # copy definitions from Dynamo to Github
     if dyf:
         src_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
+
+        # print(list(src_dyfs))
+
         os.chdir(dst)
-        dst_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
+        dst_dyfs = list(f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
         for f in src_dyfs:
+
             # equal filenames
             if f in dst_dyfs:
-                src_dyf_modf_time = os.path.getmtime(f)
+                src_dyf_modf_time = os.path.getmtime(
+                                                    os.path.join(src,
+                                                                 r'dyf\{}'.format(f))
+                                                    )
+
                 # lookup the same f name in dst_dyfs
                 dest_f = dst_dyfs[list(dst_dyfs).index(f)]
-                dst_dyf_modf_time = os.path.getmtime(dest_f)
+                dst_dyf_modf_time = os.path.getmtime(
+                                                    os.path.join(dst,
+                                                                 r'dyf\{}'.format(dest_f))
+                                                    )
+
 
                 if src_dyf_modf_time > dst_dyf_modf_time:
+
+                    dyf_file_source = os.path.join(src, r'dyf\{}'.format(f))
+                    dyf_dst = os.path.join(dst, r'dyf')
+
+                    assert os.path.isfile(dyf_file_source)
+                    assert os.path.isdir(dyf_dst)
+
+                    print('still ok')
+
+                    # TODO: (CURICIAL!) Permission problem: Errno 13
                     shutil.copyfile(
-                                    os.path.join(src, r'dyf\{}'.format(f)),
-                                    os.path.join(dst, r'dyf')
+                                    dyf_file_source,
+                                    dyf_dst
                                     )
 
+
             elif f not in dst_dyfs:
+                assert os.path.isfile(src + r'\dyf\{}'.format(f))
+                assert os.path.isdir('{}\{}'.format(dst, 'dyf'))
+
                 shutil.copyfile(
                                 os.path.join(src, r'dyf\{}'.format(f)),
                                 os.path.join(dst, r'dyf')
@@ -121,16 +148,23 @@ if __name__ == '__main__':
     """
 
 
-
     # Mode 1 (Dynamic copy all node python and src files)
-    mode_1 = True
-    mode_2 = False
-    mode_3 = False
+    mode_1 = False  # dynamic
+    mode_2 = False  # nodesrc, core static
+    mode_3 = True   # dyf, static
 
     _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
                     r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
     _dst        = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday' if(mode_1 or mode_2) else \
                     r'D:\Libraries\Documents\GitHub\Faraday'
+
+    _src = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday' if (mode_1 or mode_2) else \
+            r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday'
+    _dst = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday' if (mode_1 or mode_2) else \
+            r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday'
+
+    print('src = {}, dst = {}'.format(_src, _dst))
+
     _dyf        = True if mode_3 else False
     _nodesrc    = False if mode_3 else True
     _faradcore  = False if mode_3 else True
