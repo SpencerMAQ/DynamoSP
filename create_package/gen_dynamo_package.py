@@ -13,9 +13,11 @@ https://github.com/ladybug-tools/ladybug-dynamo/
 blob/master/resources/createpackage/genDynamoPackage.py"""
 
 # py 3.6
+# TODO: not yet tested
 
 import json
 import os
+
 
 # definitions_path = path to dyf files
 def create_pkg(definitions_path):
