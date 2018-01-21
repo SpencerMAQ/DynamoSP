@@ -68,9 +68,31 @@ def copy_files(src, dst, dyf=False, nodesrc=True, hbsrc=True, dynamic=False):
 
     os.chdir(src)
 
-    # copy definitions
+    # copy definitions from Dynamo to Github
     if dyf:
-        dyfs = (f for f in os.listdir(r'plugin\dyf'))
+        src_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
+        os.chdir(dst)
+        dst_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
+        for f in src_dyfs:
+            # equal filenames
+            if f in dst_dyfs:
+                src_dyf_modf_time = os.path.getmtime(f)
+                # lookup the same f name in dst_dyfs
+                dest_f = dst_dyfs[list(dst_dyfs).index(f)]
+                dst_dyf_modf_time = os.path.getmtime(dest_f)
+
+                if src_dyf_modf_time > dst_dyf_modf_time:
+                    shutil.copyfile(
+                                    os.path.join(src, r'dyf\{}'.format(f)),
+                                    os.path.join(dst, r'dyf')
+                                    )
+                    
+            elif f not in dst_dyfs:
+                shutil.copyfile(
+                                os.path.join(src, r'dyf\{}'.format(f)),
+                                os.path.join(dst, r'dyf')
+                                )
+
 
     # direct way of checking if file was modified: os.path.getmtime
 
