@@ -105,8 +105,12 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
                                 os.path.join(dst, r'dyf')
                                 )
 
+    if nodesrc:
+        pass
 
-    # direct way of checking if file was modified: os.path.getmtime
+    if faradcore:
+        pass
+
 
 if __name__ == '__main__':
     """Script will run for a max time for 4 hrs, then will automatically
