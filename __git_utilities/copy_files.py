@@ -19,24 +19,13 @@
 # Can be used if Dynamo is IDLE
 
 # --------- CAUTION! -------- #
-
-
-"""Patterned after Mostapha's copy_files.py
-https://github.com/ladybug-tools/ladybug-dynamo/
-blob/master/plugin/copy_files.py
-
-# TODO: reverse the flow because Mostapha works from Github
-# to the Dynamo PKG folder, I'll do the opposite (do this some time in the future)
-
+"""
 # TODO (interesting)
 # use this library instead (https://pypi.python.org/pypi/watchdog/0.5.4)
 # to detect file changes, then run code as needed
 # https://stackoverflow.com/questions/5738442/detect-file-change-without-polling
 # or get the last modified time instead, use that to know if to replace file or not
 # https://stackoverflow.com/questions/375154/how-do-i-get-the-time-a-file-was-last-modified-in-python
-
-# TODO: Find out what happens if a file already exists,
-# i.e. is it copied then replaced?
 
 # TODO: Make this a PyQT script???
 """
@@ -112,7 +101,8 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
 
 
                 if src_dyf_modf_time > dst_dyf_modf_time:
-                    # TODO: (CURICIAL!) Permission problem: Errno 13 (only happens for copyfile)
+                    # FIXED: Permission problem: Errno 13 (only happens for copyfile)
+                    # WORKING!, replaces file if it already exists
                     copied_file = shutil.copy2(dyf_file_source,
                                                dyf_dst)
 
