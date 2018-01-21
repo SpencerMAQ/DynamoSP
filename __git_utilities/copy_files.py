@@ -83,6 +83,7 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
 
     # copy definitions from Dynamo to Github
     if dyf:
+        copied_files = []
         src_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
 
         # print(list(src_dyfs))
@@ -90,47 +91,43 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
         os.chdir(dst)
         dst_dyfs = list(f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
         for f in src_dyfs:
+            dyf_file_source = os.path.join(src, r'dyf\{}'.format(f))
+            dyf_dst = os.path.join(dst, r'dyf')
 
             # equal filenames
             if f in dst_dyfs:
                 src_dyf_modf_time = os.path.getmtime(
                                                     os.path.join(src,
-                                                                 r'dyf\{}'.format(f))
+                                                                 r'dyf\{}'.format(f)
+                                                                 )
                                                     )
 
                 # lookup the same f name in dst_dyfs
                 dest_f = dst_dyfs[list(dst_dyfs).index(f)]
                 dst_dyf_modf_time = os.path.getmtime(
                                                     os.path.join(dst,
-                                                                 r'dyf\{}'.format(dest_f))
+                                                                 r'dyf\{}'.format(dest_f)
+                                                                 )
                                                     )
 
 
                 if src_dyf_modf_time > dst_dyf_modf_time:
+                    # TODO: (CURICIAL!) Permission problem: Errno 13 (only happens for copyfile)
+                    copied_file = shutil.copy2(dyf_file_source,
+                                               dyf_dst)
 
-                    dyf_file_source = os.path.join(src, r'dyf\{}'.format(f))
-                    dyf_dst = os.path.join(dst, r'dyf')
+                    copied_files.append(os.path.basename(copied_file))
 
-                    assert os.path.isfile(dyf_file_source)
-                    assert os.path.isdir(dyf_dst)
-
-                    print('still ok')
-
-                    # TODO: (CURICIAL!) Permission problem: Errno 13
-                    shutil.copyfile(
-                                    dyf_file_source,
-                                    dyf_dst
-                                    )
 
 
             elif f not in dst_dyfs:
-                assert os.path.isfile(src + r'\dyf\{}'.format(f))
-                assert os.path.isdir('{}\{}'.format(dst, 'dyf'))
+                # Working!
+                copied_file = shutil.copy2(dyf_file_source,
+                                           dyf_dst)
 
-                shutil.copyfile(
-                                os.path.join(src, r'dyf\{}'.format(f)),
-                                os.path.join(dst, r'dyf')
-                                )
+                copied_files.append(os.path.basename(copied_file))
+
+        print(copied_files)
 
     if nodesrc:
         pass
