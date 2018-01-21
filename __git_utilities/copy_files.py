@@ -36,6 +36,8 @@ blob/master/plugin/copy_files.py
 
 # TODO: Find out what happens if a file already exists,
 # i.e. is it copied then replaced?
+
+# TODO: Make this a PyQT script???
 """
 
 import os
@@ -43,7 +45,7 @@ import shutil
 import time
 
 
-def copy_files(src, dst, dyf=False, nodesrc=True, hbsrc=True, dynamic=False):
+def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
     """Copies files from Dynamo packages folder (e.g. Faraday)
     into the git folder for version control
 
@@ -52,16 +54,26 @@ def copy_files(src, dst, dyf=False, nodesrc=True, hbsrc=True, dynamic=False):
     Then rebuild the dyf files in Dynamo
     Lastly, recopy the dyf files from Package folder to Github folder
 
-    Mode 1:     copy .py files from Github
+    Mode 1:     Dynamic mode
+                copy .py (Faraday/src to ~extra/nodesrc) files from Github
+                including Faraday/faradaycore to ~extra/faradaycore
+
+    Mode 2:     Static mode
+                copy .py (Faraday/src to ~extra/nodesrc) files from Github
+                including Faraday/faradaycore to ~extra/faradaycore
+
+    Mode 3:     Always Static
+                copy all DYFs from Packages/Farad/dyf to Github/Faraday/dyf
+                DON'T USE THIS MODE WITH DYNAMIC UPDATE!
 
     Args:
-        src:        Package source
-        dst:        Github destination repo folder
-        dyf:        True to copy dyf files
-        nodesrc:    copy files from Dynamo's extra folder to 'src'
-        hbsrc:      ladybug source dode
-        dynamic:    Script runs for 4 hours, automatically
-                    checks if files have been modified
+        src:            Package source
+        dst:            Github destination repo folder
+        dyf:            True to copy dyf files
+        nodesrc:        copy files from Dynamo's extra folder to 'src'
+        faradcore:      ladybug source dode
+        dynamic:        Script runs for 4 hours, automatically
+                        checks if files have been modified
     """
     assert os.path.isdir(src)
     assert os.path.isdir(dst)
@@ -86,7 +98,7 @@ def copy_files(src, dst, dyf=False, nodesrc=True, hbsrc=True, dynamic=False):
                                     os.path.join(src, r'dyf\{}'.format(f)),
                                     os.path.join(dst, r'dyf')
                                     )
-                    
+
             elif f not in dst_dyfs:
                 shutil.copyfile(
                                 os.path.join(src, r'dyf\{}'.format(f)),
@@ -104,12 +116,34 @@ if __name__ == '__main__':
     every 20 seconds
     """
 
-    _src = r'D:\Libraries\Documents\GitHub\Faraday'
-    _dst = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
+
+
+    # Mode 1 (Dynamic copy all node python and src files)
+    mode_1 = True
+    mode_2 = False
+    mode_3 = False
+
+    _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
+                    r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
+    _dst        = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday' if(mode_1 or mode_2) else \
+                    r'D:\Libraries\Documents\GitHub\Faraday'
+    _dyf        = True if mode_3 else False
+    _nodesrc    = False if mode_3 else True
+    _faradcore  = False if mode_3 else True
+    _dynamic    = True if mode_1 else False
 
     first_called = time.time()
+
     while True:
-        copy_files(_src, _dst)
+        copy_files(src=_src,
+                   dst=_dst,
+                   dyf=_dyf,
+                   nodesrc=_nodesrc,
+                   faradcore=_faradcore)
+
+        if not _dynamic:
+            break
+
         time.sleep(20)
         last_called = time.time()
 
