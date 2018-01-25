@@ -71,6 +71,79 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
     os.chdir(src)
 
     # copy definitions from Dynamo to Github
+
+    mode_paths_dict =   {
+                            'dyf':      {
+                                        'base_src_fldr':    r'dyf',
+                                        'base_dst_fldr':    r'dyf',
+                                        'file_extn':        r'.dyf'
+                                        },
+
+                            'nodesrc': {
+                                        'base_fldr':        r'src',
+                                        'base_dst_fldr':    r'extra/nodesrc',
+                                        'file_extn':        r'.py'
+                                        },
+
+                            'faradcore':{
+                                        'base_fldr':        r'faradaycore',
+                                        'base_dst_fldr':    r'extra/faradaycore',
+                                        'file_extn':        r'.py'
+                                        }
+                        }
+
+
+    copied_files = []
+
+    def __copy(base_src_folder, base_dst_fldr, file_extnsn, ):
+        # TODO: TEST!
+
+        """Dynamically sets the paths and filetypes based on the dict"""
+        src_files = (f for f in os.listdir(base_folder) if f.endswith(file_extnsn))
+
+        os.chdir(dst)
+        dst_files = (f for f in os.listdir(base_dst_fldr) if f.endswith(file_extnsn))
+
+        for f in src_files:
+            src_file_path = os.path.join(src, r'{}/{}'.format(base_src_fldr, f))
+            dst_path = os.path.join(dst, base_dst_fldr)
+
+            # if file already exists at dst, compute modf time
+            if f in dst_files:
+                src_modf_time = os.path.getmtime(src_file_path)
+
+                # lookup the same f name in dst_files
+                dst_f = dst_files[list(dst_files).index(f)]
+                dst_modf_time = os.path.getmtime(os.path.join(dst_path, dst_f))
+
+                if src_modf_time > dst_modf_time:
+                    copied_file = shutil.copy2(src_file_path,
+                                               dst_path)
+
+                    copied_files.append(os.path.basename(copied_file))
+
+            elif f not in dst_files:
+                copied_file = shutil.copy2(src_file_path,
+                                           dst_path)
+
+                copied_files.append(os.path.basename(copied_file))
+
+
+    # ------- SAmple usage -------
+    if dyf:
+        mode            = mode_paths_dict['dyf']
+
+        base_src_fldr   = mode['base_src_fldr']
+        base_dst_fldr   = mode['base_dst_fldr']
+        file_xtn        = mode['file_extn']
+
+        __copy(
+            base_src_folder=base_src_fldr,
+            base_dst_fldr=base_dst_fldr,
+            file_extnsn=file_xtn)
+    # ---------------------------
+
+    # TODO: DRY PRINCIPLE!!! DO NOT REPEAT YOURSELF!
     if dyf:
         copied_files = []
         src_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
@@ -143,6 +216,7 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
                                                    os.path.join(
                                                        dst, r'extra\nodesrc'.format(dest_f))
                                                    )
+
                 if nodesrc_py_modf_time > dst_f_modf_time:
                     copied_file = shutil.copy2(ndsrc_file_src,
                                                ndsrc_dest_path)
@@ -158,6 +232,7 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
         print('copied nodesrc: {}'.format(copied_files))
 
     if faradcore:
+        # TODO: FIll?
         pass
 
 
