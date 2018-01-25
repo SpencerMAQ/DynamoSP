@@ -75,34 +75,32 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
         copied_files = []
         src_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
 
-        # print(list(src_dyfs))
-
-        os.chdir(dst)
+        os.chdir(dst)   # necessary to list files in it
         dst_dyfs = list(f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
+
         for f in src_dyfs:
             dyf_file_source = os.path.join(src, r'dyf\{}'.format(f))
             dyf_dst = os.path.join(dst, r'dyf')
 
-            # equal filenames
+            # if file already exists at dst, compute last modifcitaion time
             if f in dst_dyfs:
                 src_dyf_modf_time = os.path.getmtime(
-                                                    os.path.join(src,
-                                                                 r'dyf\{}'.format(f)
-                                                                 )
+                                                    os.path.join(
+                                                        src,
+                                                        r'dyf\{}'.format(f))
                                                     )
 
                 # lookup the same f name in dst_dyfs
                 dest_f = dst_dyfs[list(dst_dyfs).index(f)]
                 dst_dyf_modf_time = os.path.getmtime(
-                                                    os.path.join(dst,
-                                                                 r'dyf\{}'.format(dest_f)
-                                                                 )
+                                                    os.path.join(
+                                                        dst,
+                                                        r'dyf\{}'.format(dest_f))
                                                     )
 
 
                 if src_dyf_modf_time > dst_dyf_modf_time:
-                    # FIXED: Permission problem: Errno 13 (only happens for copyfile)
-                    # WORKING!, replaces file if it already exists
+                    # NOTE: has problems with copyfile (probably needs full path for dst)
                     copied_file = shutil.copy2(dyf_file_source,
                                                dyf_dst)
 
@@ -117,10 +115,47 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
 
                 copied_files.append(os.path.basename(copied_file))
 
-        print(copied_files)
+        print('copied dyfs: {}'.format(copied_files))
 
     if nodesrc:
-        pass
+        # TODO: Not yet tested
+        copied_files = []
+        nodesrc_py_files = (f for f in os.listdir(r'src') if f.endswith(r'.py'))
+
+        os.chdir(dst)
+        nodesrc_dst_files = list(f for f in os.listdir(r'extra\nodesrc')
+                                 if f.endswith(r'.py')
+                                 )
+
+        for f in nodesrc_py_files:
+            ndsrc_file_src = os.path.join(src, r'src\{}'.format(f))
+            ndsrc_dest_path = os.path.join(dst, r'extra\nodesrc')
+
+            if f in nodesrc_dst_files:
+                nodesrc_py_modf_time = os.path.getmtime(
+                                                        os.path.join(
+                                                            src,
+                                                            r'src\{}'.format(f))
+                                                        )
+
+                dest_f = nodesrc_dst_files[list(nodesrc_dst_files).index(f)]
+                dst_f_modf_time = os.path.getmtime(
+                                                   os.path.join(
+                                                       dst, r'extra\nodesrc'.format(dest_f))
+                                                   )
+                if nodesrc_py_modf_time > dst_f_modf_time:
+                    copied_file = shutil.copy2(ndsrc_file_src,
+                                               ndsrc_dest_path)
+
+                    copied_files.append(os.path.basename(copied_file))
+
+            elif f not in nodesrc_dst_files:
+                copied_file = shutil.copy2(ndsrc_file_src,
+                                           ndsrc_dest_path)
+
+                copied_files.append(os.path.basename(copied_file))
+
+        print('copied nodesrc: {}'.format(copied_files))
 
     if faradcore:
         pass
@@ -140,6 +175,7 @@ if __name__ == '__main__':
     mode_2 = False  # nodesrc, core static
     mode_3 = True   # dyf, static
 
+    # choose what src and dst are depending on mode, for mode 3: from Dynamo dyf to Github
     _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
                     r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
     _dst        = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday' if(mode_1 or mode_2) else \
