@@ -57,12 +57,6 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
         dynamic:        Script runs for 4 hours, automatically
                         checks if files have been modified
     """
-    assert os.path.isdir(src)
-    assert os.path.isdir(dst)
-
-    os.chdir(src)
-
-    # copy definitions from Dynamo to Github
 
     mode_paths_dict =   {
         'dyf':      {
@@ -84,10 +78,13 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
                     }
          }
 
+    assert os.path.isdir(src)
+    assert os.path.isdir(dst)
 
+    os.chdir(src)
     copied_files = []
 
-    def __copy(base_src_folder, base_dst_fldr, file_extnsn, ):
+    def __copy(base_src_folder, base_dst_fldr, file_extnsn):
 
         """Dynamically sets the paths and filetypes based on the dict"""
 
