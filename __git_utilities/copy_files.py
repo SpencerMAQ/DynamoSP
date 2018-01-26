@@ -19,16 +19,8 @@
 # Can be used if Dynamo is IDLE
 
 # --------- CAUTION! -------- #
-"""
-# TODO (interesting)
-# use this library instead (https://pypi.python.org/pypi/watchdog/0.5.4)
-# to detect file changes, then run code as needed
-# https://stackoverflow.com/questions/5738442/detect-file-change-without-polling
-# or get the last modified time instead, use that to know if to replace file or not
-# https://stackoverflow.com/questions/375154/how-do-i-get-the-time-a-file-was-last-modified-in-python
 
 # TODO: Make this a PyQT script???
-"""
 
 import os
 import shutil
@@ -128,6 +120,8 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
 
                 copied_files.append(os.path.basename(copied_file))
 
+        copied_files.append('\n')
+
 
     # ------- SAmple usage -------
     if dyf:
@@ -142,6 +136,7 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
             base_dst_fldr=base_dst_fldr,
             file_extnsn=file_xtn)
 
+    # TODO: TEST
     if nodesrc:
         mode = mode_paths_dict['nodesrc']
 
@@ -154,6 +149,7 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
             base_dst_fldr=base_dst_fldr,
             file_extnsn=file_xtn)
 
+    # TODO: TEST
     if faradcore:
         mode = mode_paths_dict['faradcore']
 
@@ -166,53 +162,8 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
             base_dst_fldr=base_dst_fldr,
             file_extnsn=file_xtn)
 
+    print(copied_files)
 
-    # if dyf:
-    #     copied_files = []
-    #     src_dyfs = (f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
-    #
-    #     os.chdir(dst)   # necessary to list files in it
-    #     dst_dyfs = list(f for f in os.listdir(r'dyf') if f.endswith('.dyf'))
-    #
-    #     for f in src_dyfs:
-    #         dyf_file_source = os.path.join(src, r'dyf\{}'.format(f))
-    #         dyf_dst = os.path.join(dst, r'dyf')
-    #
-    #         # if file already exists at dst, compute last modifcitaion time
-    #         if f in dst_dyfs:
-    #             src_dyf_modf_time = os.path.getmtime(
-    #                                                 os.path.join(
-    #                                                     src,
-    #                                                     r'dyf\{}'.format(f))
-    #                                                 )
-    #
-    #             # lookup the same f name in dst_dyfs
-    #             dest_f = dst_dyfs[list(dst_dyfs).index(f)]
-    #             dst_dyf_modf_time = os.path.getmtime(
-    #                                                 os.path.join(
-    #                                                     dst,
-    #                                                     r'dyf\{}'.format(dest_f))
-    #                                                 )
-    #
-    #
-    #             if src_dyf_modf_time > dst_dyf_modf_time:
-    #                 # NOTE: has problems with copyfile (probably needs full path for dst)
-    #                 copied_file = shutil.copy2(dyf_file_source,
-    #                                            dyf_dst)
-    #
-    #                 copied_files.append(os.path.basename(copied_file))
-    #
-    #
-    #
-    #         elif f not in dst_dyfs:
-    #             # Working!
-    #             copied_file = shutil.copy2(dyf_file_source,
-    #                                        dyf_dst)
-    #
-    #             copied_files.append(os.path.basename(copied_file))
-    #
-    #     print('copied dyfs: {}'.format(copied_files))
-    #
     # if nodesrc:
     #     copied_files = []
     #     nodesrc_py_files = (f for f in os.listdir(r'src') if f.endswith(r'.py'))
@@ -262,12 +213,13 @@ if __name__ == '__main__':
     every 20 seconds
     """
 
-
+    # TODO: Test dynamic
     # Mode 1 (Dynamic copy all node python and src files)
     mode_1 = False  # dynamic
     mode_2 = False  # nodesrc, core static
     mode_3 = True   # dyf, static
 
+    # TODO: Test on actual directory
     # choose what src and dst are depending on mode, for mode 3: from Dynamo dyf to Github
     _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
                     r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
