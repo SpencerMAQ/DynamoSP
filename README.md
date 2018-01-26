@@ -6,19 +6,19 @@ In the tradition of Grasshopper plugins being given the names of animals or inse
 
 ```
 .
-├── __git_utilities         # Utilities for copying to/from Github Folder to Dynamo Package folder  
+├── __git_utilities 
 │   ├── README.md  
 │   ├── copy_files.py  
 │   ├── gen_dynamo_package.py  
-├── dyf                     # Python DYF nodes built by dynamo  
+├── dyf
 │   ├── .dyf  
-├── faradaycore             # Core Uitilities to be imported into DYFs  
+├── faradaycore
 │   ├── README.md  
 │   ├── __init__.py  
 │   ├── api_uitls.py  
 │   ├── config.py  
 │   ├── utils.py  
-├── src                     # (nodesrc) raw python code from the DYFs  
+├── src
 │   ├── .py  
 ├── LICENSE  
 └── README.md  
