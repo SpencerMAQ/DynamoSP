@@ -102,47 +102,7 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
             copied_files.append(os.path.basename(copied_file))
 
 
-    return copied_files
-
-    # if nodesrc:
-    #     copied_files = []
-    #     nodesrc_py_files = (f for f in os.listdir(r'src') if f.endswith(r'.py'))
-    #
-    #     os.chdir(dst)
-    #     nodesrc_dst_files = list(f for f in os.listdir(r'extra\nodesrc')
-    #                              if f.endswith(r'.py')
-    #                              )
-    #
-    #     for f in nodesrc_py_files:
-    #         ndsrc_file_src = os.path.join(src, r'src\{}'.format(f))
-    #         ndsrc_dest_path = os.path.join(dst, r'extra\nodesrc')
-    #
-    #         if f in nodesrc_dst_files:
-    #             nodesrc_py_modf_time = os.path.getmtime(
-    #                                                     os.path.join(
-    #                                                         src,
-    #                                                         r'src\{}'.format(f))
-    #                                                     )
-    #
-    #             dest_f = nodesrc_dst_files[list(nodesrc_dst_files).index(f)]
-    #             dst_f_modf_time = os.path.getmtime(
-    #                                                os.path.join(
-    #                                                    dst, r'extra\nodesrc'.format(dest_f))
-    #                                                )
-    #
-    #             if nodesrc_py_modf_time > dst_f_modf_time:
-    #                 copied_file = shutil.copy2(ndsrc_file_src,
-    #                                            ndsrc_dest_path)
-    #
-    #                 copied_files.append(os.path.basename(copied_file))
-    #
-    #         elif f not in nodesrc_dst_files:
-    #             copied_file = shutil.copy2(ndsrc_file_src,
-    #                                        ndsrc_dest_path)
-    #
-    #             copied_files.append(os.path.basename(copied_file))
-    #
-    #     print('copied nodesrc: {}'.format(copied_files))
+    print('copied files: {}'.format(copied_files))
 
 
 if __name__ == '__main__':
