@@ -21,6 +21,9 @@
 # --------- CAUTION! -------- #
 
 # TODO: Make this a PyQT script???
+# TODO: (include in PyQt but already start including even w/o):
+# print out which files would be changed if files already exist, ask for
+# user verification
 
 import os
 import shutil
