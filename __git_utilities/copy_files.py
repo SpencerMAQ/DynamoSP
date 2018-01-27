@@ -25,6 +25,8 @@
 # print out which files would be changed if files already exist, ask for
 # user verification
 
+# TODO: try to un-nest the copy function by making MODE a parameter
+
 import os
 import shutil
 import time
@@ -88,8 +90,14 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
     copied_files = []
 
     def __copy(base_src_folder, base_dst_fldr, file_extnsn):
+        """Actual copy
+        Dynamically sets the paths and filetypes based on the dict
+        Note: can't un-nest this function because `if dyf` and
+        `if nodesrc` have different directories
 
-        """Dynamically sets the paths and filetypes based on the dict"""
+        Args:
+            file_extnsn:    .py or .dyf
+        """
 
         src_files = (f for f in os.listdir(base_src_folder) if f.endswith(file_extnsn))
 
@@ -123,7 +131,6 @@ def copy_files(src, dst, dyf=False, nodesrc=True, faradcore=True):
         copied_files.append('\n')
 
 
-    # ------- SAmple usage -------
     if dyf:
         mode            = mode_paths_dict['dyf']
 
