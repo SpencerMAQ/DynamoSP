@@ -73,7 +73,7 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
     src_files = (f for f in os.listdir(base_src) if f.endswith(file_xtnsn))
 
     os.chdir(dst)
-    dst_files = list(f for f in os.listdir(base_dst_fldr) if f.endswith(file_xtnsn))
+    dst_files = (f for f in os.listdir(base_dst_fldr) if f.endswith(file_xtnsn))
 
     copied_files = []
 
@@ -120,13 +120,13 @@ if __name__ == '__main__':
                         'file_extn':        r'.dyf'
                     },
 
-        'nodesrc': {
+        'nodesrc':  {
                         'base_fldr':        r'src',
                         'base_dst_fldr':    r'extra/nodesrc',
                         'file_extn':        r'.py'
-                    },
+                     },
 
-        'faradcore':{
+        'faradcore': {
                         'base_fldr':        r'faradaycore',
                         'base_dst_fldr':    r'extra/faradaycore',
                         'file_extn':        r'.py'
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     # Mode 1 (Dynamic copy all node python and src files)
 
     # ------- SET THIS FIRST --------
-    MOTHER_MODE = 3 # 1: Dynamic, 2: nodesrc, core(static), 3: dyf, static
+    MOTHER_MODE = 3  # 1: Dynamic, 2: nodesrc, core(static), 3: dyf, static
     mode_1, mode_2, mode_3 = False, False, False
 
     if MOTHER_MODE == 1:
