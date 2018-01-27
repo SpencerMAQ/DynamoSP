@@ -11,14 +11,14 @@
 
 # py 3.6
 
-# --------- CAUTION! -------- #
+# ------------------ CAUTION! ------------------ #
 
 # DO NOT RUN WHILE DYNAMO IS RUNNING ANY SCRIPT AND USING
 # ANY OF THE FILES!! MAY CAUSE FILES TO BECOME CORRUPT!
 
 # Can be used if Dynamo is IDLE
 
-# --------- CAUTION! -------- #
+# ------------------ CAUTION! ------------------ #
 
 # TODO: Make this a PyQT script???
 # TODO: (include in PyQt but already start including even w/o):
