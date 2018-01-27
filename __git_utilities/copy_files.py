@@ -29,6 +29,8 @@ import os
 import shutil
 import time
 
+__version__ = '0.0.0'
+
 
 def copy_files(src, dst, base_src, base_dst, file_xtnsn):
     """Copies files from Dynamo packages folder (e.g. Faraday)
@@ -68,13 +70,12 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
     assert os.path.isdir(dst)
 
     os.chdir(src)
-    copied_files = []
-
     src_files = (f for f in os.listdir(base_src) if f.endswith(file_xtnsn))
 
     os.chdir(dst)
     dst_files = list(f for f in os.listdir(base_dst_fldr) if f.endswith(file_xtnsn))
 
+    copied_files = []
 
     for f in src_files:
         src_file_path = os.path.join(src, r'{}/{}'.format(base_src, f))
@@ -218,13 +219,13 @@ if __name__ == '__main__':
 
             mode            = mode_paths_dict['nodesrc']
 
-            base_src        = mode['base_src_fldr']
+            base_src_fldr   = mode['base_src_fldr']
             base_dst_fldr   = mode['base_dst_fldr']
             file_xtn        = mode['file_extn']
 
             copy_files(src=_src,
                        dst=_dst,
-                       base_src=base_src,
+                       base_src=base_src_fldr,
                        base_dst=base_dst_fldr,
                        file_xtnsn=file_xtn)
 
@@ -232,26 +233,26 @@ if __name__ == '__main__':
         if _faradcore:
             mode            = mode_paths_dict['faradcore']
 
-            base_src        = mode['base_src_fldr']
+            base_src_fldr   = mode['base_src_fldr']
             base_dst_fldr   = mode['base_dst_fldr']
             file_xtn        = mode['file_extn']
 
             copy_files(src=_src,
                        dst=_dst,
-                       base_src=base_src,
+                       base_src=base_src_fldr,
                        base_dst=base_dst_fldr,
                        file_xtnsn=file_xtn)
 
         if _dyf:
             mode            = mode_paths_dict['dyf']
 
-            base_src        = mode['base_src_fldr']
+            base_src_fldr   = mode['base_src_fldr']
             base_dst_fldr   = mode['base_dst_fldr']
             file_xtn        = mode['file_extn']
 
             copy_files(src=_src,
                        dst=_dst,
-                       base_src=base_src,
+                       base_src=base_src_fldr,
                        base_dst=base_dst_fldr,
                        file_xtnsn=file_xtn)
 
