@@ -25,6 +25,8 @@
 # print out which files would be changed if files already exist, ask for
 # user verification
 
+# TODO: Use f-strings to make things more readable (https://cito.github.io/blog/f-strings/)
+
 import os
 import shutil
 import time
