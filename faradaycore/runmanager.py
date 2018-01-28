@@ -9,5 +9,6 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 # TODO: add functionalities for calling from shell
+# TODO: self studies of how to run radiance and E+ from python
 
 import subprocess
