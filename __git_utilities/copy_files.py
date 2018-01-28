@@ -25,8 +25,6 @@
 # print out which files would be changed if files already exist, ask for
 # user verification
 
-# TODO: Use f-strings to make things more readable (https://cito.github.io/blog/f-strings/)
-
 import os
 import shutil
 import time
@@ -80,7 +78,7 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
     copied_files = []
 
     for f in src_files:
-        src_file_path = os.path.join(src, r'{}/{}'.format(base_src, f))
+        src_file_path = os.path.join(src, f'{base_src}/{f}')
         dst_path = os.path.join(dst, base_dst)
 
         # if file already exists at dst, compute modf time
@@ -104,7 +102,7 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
             copied_files.append(os.path.basename(copied_file))
 
 
-    print('copied files: {}'.format(copied_files))
+    print(f'copied files: {copied_files}')
 
 
 if __name__ == '__main__':
@@ -164,7 +162,7 @@ if __name__ == '__main__':
     _dst = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday' if (mode_1 or mode_2) else \
             r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday'
 
-    print('src = {}, dst = {}'.format(_src, _dst))
+    print(f'src = {_src}, dst = {_dst}')
 
     _dyf        = True if mode_3 else False
     _nodesrc    = False if mode_3 else True
