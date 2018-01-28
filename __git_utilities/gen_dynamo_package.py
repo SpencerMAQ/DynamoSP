@@ -12,16 +12,20 @@
 https://github.com/ladybug-tools/ladybug-dynamo/
 blob/master/resources/createpackage/genDynamoPackage.py"""
 
-# py 3.6
 # TODO: not yet tested
 
 import json
 import os
 
 
+__version__     = '0.0.1'
+__py_version__  = 3.6
+
+
 # definitions_path = path to dyf files
 def create_pkg(definitions_path):
-    faraday_data = {'license':              'GPL-3.0',
+    faraday_data = {
+                    'license':              'GPL-3.0',
                     'file_hash':            None,
                     'name':                 'Faraday',
                     'version':              '0.0.1',
@@ -51,7 +55,7 @@ def create_pkg(definitions_path):
         if not os.path.isfile(_fullpath):
             continue
 
-        with open(_fullpath, 'rb') as dyf:
+        with open(_fullpath, 'r') as dyf:
             line = dyf.readline()       # only read the header
 
             # parse xml, 1:-1 removes the "" parentheses from the XML using list slicing
@@ -62,7 +66,8 @@ def create_pkg(definitions_path):
 
     faraday_data['contents'] = ",".join(contents)
 
-    with open(os.path.join(definitions_path, 'pkg.json'), 'wb') as pkg:
+    # os.path.dirname = gets parent directory where the JSON should be
+    with open(os.path.join(os.path.dirname(definitions_path), 'pkg.json'), 'w') as pkg:
         json.dump(faraday_data,
                   pkg,
                   indent=4,
@@ -70,7 +75,8 @@ def create_pkg(definitions_path):
                   )
 
 if __name__ == '__main__':
-    test_path   = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\definitions'
+    test_path = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday\dyf'
+    # test_path   = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\definitions'
     # test_path2  = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\backup'
     # actual_path = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday\dyf'
 
