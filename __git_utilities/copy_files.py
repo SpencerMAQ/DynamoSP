@@ -29,7 +29,7 @@ import os
 import shutil
 import time
 
-__version__ = '0.0.0'
+__version__ = '0.0.1'
 
 
 def copy_files(src, dst, base_src, base_dst, file_xtnsn):
@@ -73,6 +73,8 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
     src_files = (f for f in os.listdir(base_src) if f.endswith(file_xtnsn))
 
     os.chdir(dst)
+    if not os.path.exists(os.path.join(dst, base_dst_fldr)):
+        os.makedirs(os.path.join(dst, base_dst_fldr))
     dst_files = (f for f in os.listdir(base_dst_fldr) if f.endswith(file_xtnsn))
 
     copied_files = []
@@ -121,23 +123,21 @@ if __name__ == '__main__':
                     },
 
         'nodesrc':  {
-                        'base_fldr':        r'src',
-                        'base_dst_fldr':    r'extra/nodesrc',
+                        'base_src_fldr':    r'src',
+                        'base_dst_fldr':    r'extra\nodesrc',
                         'file_extn':        r'.py'
                      },
 
         'faradcore': {
-                        'base_fldr':        r'faradaycore',
-                        'base_dst_fldr':    r'extra/faradaycore',
+                        'base_src_fldr':    r'faradaycore',
+                        'base_dst_fldr':    r'extra\faradaycore',
                         'file_extn':        r'.py'
                     }
          }
 
     # TODO: Test dynamic
-    # Mode 1 (Dynamic copy all node python and src files)
-
-    # ------- SET THIS FIRST --------
-    MOTHER_MODE = 3  # 1: Dynamic, 2: nodesrc, core(static), 3: dyf, static
+    # -------- SET THIS FIRST --------
+    MOTHER_MODE = 2  # 1: Dynamic, 2: nodesrc [.py], core[.py] (static), 3: dyf, static
     mode_1, mode_2, mode_3 = False, False, False
 
     if MOTHER_MODE == 1:
@@ -151,7 +151,6 @@ if __name__ == '__main__':
 
 
     # TODO: Test on actual directory
-    # choose what src and dst are depending on mode, for mode 3: from Dynamo dyf to Github
     _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
                     r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
     _dst        = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday' if(mode_1 or mode_2) else \
@@ -174,7 +173,6 @@ if __name__ == '__main__':
     first_called = time.time()
 
     while True:
-        # TODO: Test
         if _nodesrc:
 
             mode            = mode_paths_dict['nodesrc']
@@ -189,7 +187,6 @@ if __name__ == '__main__':
                        base_dst=base_dst_fldr,
                        file_xtnsn=file_xtn)
 
-        # TODO: Test
         if _faradcore:
             mode            = mode_paths_dict['faradcore']
 
