@@ -29,7 +29,8 @@ import os
 import shutil
 import time
 
-__version__ = '0.0.1'
+__version__     = '0.0.1'
+__py_version__  = 3.6
 
 
 def copy_files(src, dst, base_src, base_dst, file_xtnsn):
