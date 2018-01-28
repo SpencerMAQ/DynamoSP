@@ -12,11 +12,8 @@
 https://github.com/ladybug-tools/ladybug-dynamo/
 blob/master/resources/createpackage/genDynamoPackage.py"""
 
-# TODO: not yet tested
-
 import json
 import os
-
 
 __version__     = '0.0.1'
 __py_version__  = 3.6
