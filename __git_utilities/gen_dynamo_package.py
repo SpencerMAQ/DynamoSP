@@ -12,6 +12,8 @@
 https://github.com/ladybug-tools/ladybug-dynamo/
 blob/master/resources/createpackage/genDynamoPackage.py"""
 
+# NOTE: to self (apparently, when you try to publish, Dynamo auto creates the JSON?)
+
 import json
 import os
 
