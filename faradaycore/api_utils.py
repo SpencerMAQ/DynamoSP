@@ -37,6 +37,7 @@ uiapp   = DM.Instance.CurrentUIApplication
 app     = uiapp.Application
 uidoc   = DM.Instance.CurrentUIDocument
 
+
 class Transaction:
     """Automatically wraps Transactions in
     t.Start() and t.Commit(), and automates
