@@ -147,8 +147,8 @@ if __name__ == '__main__':
 
     # TODO: Test dynamic
     # -------- SET THIS FIRST --------
-    MOTHER_MODE = 2  # 1: Dynamic, 2: nodesrc [.py], core[.py] (static), 3: dyf, static
-    mode_1, mode_2, mode_3 = False, False, False
+    MOTHER_MODE             = 2  # 1: Dynamic, 2: nodesrc [.py], core[.py] (static), 3: dyf, static
+    mode_1, mode_2, mode_3  = False, False, False
 
     if MOTHER_MODE == 1:
         mode_1 = True
