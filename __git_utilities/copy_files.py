@@ -76,7 +76,8 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
     os.chdir(dst)
     if not os.path.exists(os.path.join(dst, base_dst_fldr)):
         os.makedirs(os.path.join(dst, base_dst_fldr))
-    dst_files = (f for f in os.listdir(base_dst_fldr) if f.endswith(file_xtnsn))
+    # list -> so you can use 'in', because not available for tuples
+    dst_files = list(f for f in os.listdir(base_dst_fldr) if f.endswith(file_xtnsn))
 
     copied_files = []
 
@@ -104,8 +105,16 @@ def copy_files(src, dst, base_src, base_dst, file_xtnsn):
 
             copied_files.append(os.path.basename(copied_file))
 
+    if _nodesrc:
+        str_mode = 'nodesrc'
 
-    print(f'copied files: {copied_files}')
+    elif _faradcore:
+        str_mode = 'faradcore'
+
+    else:
+        str_mode = 'dyf'
+
+    print(f'copied files in mode {str_mode}: {copied_files}')
 
 
 if __name__ == '__main__':
@@ -151,16 +160,15 @@ if __name__ == '__main__':
         mode_3 = True
 
 
-    # TODO: Test on actual directory
     _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
                     r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
     _dst        = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday' if(mode_1 or mode_2) else \
                     r'D:\Libraries\Documents\GitHub\Faraday'
 
-    _src = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday' if (mode_1 or mode_2) else \
-            r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday'
-    _dst = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday' if (mode_1 or mode_2) else \
-            r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday'
+    # _src = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday' if (mode_1 or mode_2) else \
+    #         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday'
+    # _dst = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday' if (mode_1 or mode_2) else \
+    #         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday'
 
     print(f'src = {_src}, dst = {_dst}')
 
@@ -168,6 +176,7 @@ if __name__ == '__main__':
     _nodesrc    = False if mode_3 else True
     _faradcore  = False if mode_3 else True
     _dynamic    = True if mode_1 else False
+    # print(_faradcore)
 
 
     # -----------------------
