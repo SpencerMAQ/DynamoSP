@@ -7,13 +7,15 @@ Notes to self:
     edit @ `line 150` `MOTHER_MODE = <number>`
     Modes:
     1. Dynamic mode (like mode 2 but dynamically copies files)
-       copy .py (Faraday/src to ~extra/nodesrc) files from Github
-       including Faraday/faradaycore to ~extra/faradaycore
+       copy `.py (Faraday/src to ~extra/nodesrc)` files from Github
+       including `Faraday/faradaycore` to `~extra/faradaycore`
        
     2. Static mode
-       copy .py (Faraday/src to ~extra/nodesrc) files from Github
-       including Faraday/faradaycore to ~extra/faradaycore
+       copy `.py (Faraday/src to ~extra/nodesrc)` files from Github
+       including `Faraday/faradaycore` to `extra/faradaycore`
        
     3. Always static (most commonly used)
-       copy all DYFs from Packages/Farad/dyf to Github/Faraday/dyf
+       copy all `DYFs from Packages/Farad/dyf` to `Github/Faraday/dyf`
        DON'T USE THIS MODE WITH DYNAMIC UPDATE!
+       
+       Use then building scripts inside dynamo then pushing to github
