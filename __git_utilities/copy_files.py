@@ -149,10 +149,7 @@ if __name__ == '__main__':
     # TODO: Test dynamic
     # -------- SET THIS FIRST --------
 	# TODO: add mode 4: only print out what the directories are
-	MOTHER_MODE             		= 4  	# 1: Dynamic, 
-											# 2: nodesrc [.py], core[.py] (static), 
-											# 3: dyf, static
-											# 4: Only print out what the directories are
+    MOTHER_MODE = 4  	# 1: Dynamic, # 2: nodesrc [.py], core[.py] (static), # 3: dyf, static, # 4: Only print out what the directories are
     mode_1, mode_2, mode_3, mode_4  = False, False, False, False
 
     if MOTHER_MODE == 1:
@@ -164,26 +161,28 @@ if __name__ == '__main__':
     elif MOTHER_MODE == 3:
         mode_3 = True
 	
-	else:
-		mode_4 = True
+    else:
+        mode_4 = True
 
 	# dev test 1
-	
-	APPDATA 			= os.environ['APPDATA']
+
+    APPDATA = os.environ['APPDATA']
 	# USER_PATH 	= os.path.expanduser('~')	# TODO: Test @ home where Do
 	# NOTE: os.path.expanduser won't get your Documents location if it was changed, therefore:
 	# https://stackoverflow.com/questions/6227590/finding-the-users-my-documents-path
-	CSIDL_PERSONAL 		= 5		# My Documents
-	SHGFP_TYPE_CURRENT 	= 0   	# Get current, not default value
-	buf= ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
-	ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
-	
-	DOCUMENTS_DIR		= buf.value
-	
-	GITHUB_DIR 			= os.path.join(DOCUMENTS_DIR, r'GitHub\Faraday')
-	DYNAMO_DIR			= os.path.join(APPDATA, r'Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday')
-	
-	
+    CSIDL_PERSONAL 		= 5		# My Documents
+    SHGFP_TYPE_CURRENT 	= 0   	# Get current, not default value
+    buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+    ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
+
+    DOCUMENTS_DIR		= buf.value
+
+    GITHUB_DIR 			= os.path.join(DOCUMENTS_DIR, r'GitHub\Faraday')
+    DYNAMO_DIR			= os.path.join(APPDATA, r'Dynamo\Dynamo Revit\1.3\packages\Faraday')
+
+    if not os.path.exists(DYNAMO_DIR):
+        os.makedirs(DYNAMO_DIR)
+
     _src        = GITHUB_DIR if(mode_1 or mode_2) else DYNAMO_DIR
     _dst        = DYNAMO_DIR if(mode_1 or mode_2) else GITHUB_DIR
 
@@ -204,57 +203,59 @@ if __name__ == '__main__':
     # -----------------------
     first_called = time.time()
 	
-	if mode_4:
-		print(f'src = {_src}, dst = {_dst}')
+    if mode_4:
+        assert os.path.isdir(_src)
+        assert os.path.isdir(_dst)
+        print(f'src = {_src}, dst = {_dst}')
 		
-	else:
-		while True:
-			if _nodesrc:
+    else:
+        while True:
+            if _nodesrc:
 
-				mode            = mode_paths_dict['nodesrc']
+                mode            = mode_paths_dict['nodesrc']
 
-				base_src_fldr   = mode['base_src_fldr']
-				base_dst_fldr   = mode['base_dst_fldr']
-				file_xtn        = mode['file_extn']
+                base_src_fldr   = mode['base_src_fldr']
+                base_dst_fldr   = mode['base_dst_fldr']
+                file_xtn        = mode['file_extn']
 
-				copy_files(src=_src,
+                copy_files(src=_src,
 						   dst=_dst,
 						   base_src=base_src_fldr,
 						   base_dst=base_dst_fldr,
 						   file_xtnsn=file_xtn)
 
-			if _faradcore:
-				mode            = mode_paths_dict['faradcore']
+            if _faradcore:
+                mode            = mode_paths_dict['faradcore']
 
-				base_src_fldr   = mode['base_src_fldr']
-				base_dst_fldr   = mode['base_dst_fldr']
-				file_xtn        = mode['file_extn']
+                base_src_fldr   = mode['base_src_fldr']
+                base_dst_fldr   = mode['base_dst_fldr']
+                file_xtn        = mode['file_extn']
 
-				copy_files(src=_src,
+                copy_files(src=_src,
+                           dst=_dst,
+						   base_src=base_src_fldr,
+						   base_dst=base_dst_fldr,
+						   file_xtnsn=file_xtn)
+
+            if _dyf:
+                mode            = mode_paths_dict['dyf']
+
+                base_src_fldr   = mode['base_src_fldr']
+                base_dst_fldr   = mode['base_dst_fldr']
+                file_xtn        = mode['file_extn']
+
+                copy_files(src=_src,
 						   dst=_dst,
 						   base_src=base_src_fldr,
 						   base_dst=base_dst_fldr,
 						   file_xtnsn=file_xtn)
 
-			if _dyf:
-				mode            = mode_paths_dict['dyf']
 
-				base_src_fldr   = mode['base_src_fldr']
-				base_dst_fldr   = mode['base_dst_fldr']
-				file_xtn        = mode['file_extn']
+            if not _dynamic:
+                break
 
-				copy_files(src=_src,
-						   dst=_dst,
-						   base_src=base_src_fldr,
-						   base_dst=base_dst_fldr,
-						   file_xtnsn=file_xtn)
+            time.sleep(20)
+            last_called = time.time()
 
-
-			if not _dynamic:
-				break
-
-			time.sleep(20)
-			last_called = time.time()
-
-			if last_called - first_called >= 14400:
-				break
+            if last_called - first_called >= 14400:
+                break
