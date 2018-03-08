@@ -28,6 +28,7 @@
 import os
 import shutil
 import time
+import ctypes.wintypes
 
 __version__     = '0.0.1'
 __py_version__  = 3.6
@@ -147,8 +148,12 @@ if __name__ == '__main__':
 
     # TODO: Test dynamic
     # -------- SET THIS FIRST --------
-    MOTHER_MODE             = 2  # 1: Dynamic, 2: nodesrc [.py], core[.py] (static), 3: dyf, static
-    mode_1, mode_2, mode_3  = False, False, False
+	# TODO: add mode 4: only print out what the directories are
+	MOTHER_MODE             		= 4  	# 1: Dynamic, 
+											# 2: nodesrc [.py], core[.py] (static), 
+											# 3: dyf, static
+											# 4: Only print out what the directories are
+    mode_1, mode_2, mode_3, mode_4  = False, False, False, False
 
     if MOTHER_MODE == 1:
         mode_1 = True
@@ -156,10 +161,26 @@ if __name__ == '__main__':
     elif MOTHER_MODE == 2:
         mode_2 = True
 
-    else:
+    elif MOTHER_MODE == 3:
         mode_3 = True
+	
+	else:
+		mode_4 = True
 
 	# dev test 1
+	
+	APPDATA 			= os.environ['APPDATA']
+	# USER_PATH 	= os.path.expanduser('~')	# TODO: Test @ home where Do
+	# NOTE: os.path.expanduser won't get your Documents location if it was changed, therefore:
+	# https://stackoverflow.com/questions/6227590/finding-the-users-my-documents-path
+	CSIDL_PERSONAL 		= 5		# My Documents
+	SHGFP_TYPE_CURRENT 	= 0   	# Get current, not default value
+	buf= ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+	ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
+	
+	DOCUMENTS_DIR		= buf.value
+	
+	
     _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
                     r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
     _dst        = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday' if(mode_1 or mode_2) else \
@@ -181,54 +202,58 @@ if __name__ == '__main__':
 
     # -----------------------
     first_called = time.time()
+	
+	if mode_4:
+		print(_src + '\n' + _dst)
+		
+	else:
+		while True:
+			if _nodesrc:
 
-    while True:
-        if _nodesrc:
+				mode            = mode_paths_dict['nodesrc']
 
-            mode            = mode_paths_dict['nodesrc']
+				base_src_fldr   = mode['base_src_fldr']
+				base_dst_fldr   = mode['base_dst_fldr']
+				file_xtn        = mode['file_extn']
 
-            base_src_fldr   = mode['base_src_fldr']
-            base_dst_fldr   = mode['base_dst_fldr']
-            file_xtn        = mode['file_extn']
+				copy_files(src=_src,
+						   dst=_dst,
+						   base_src=base_src_fldr,
+						   base_dst=base_dst_fldr,
+						   file_xtnsn=file_xtn)
 
-            copy_files(src=_src,
-                       dst=_dst,
-                       base_src=base_src_fldr,
-                       base_dst=base_dst_fldr,
-                       file_xtnsn=file_xtn)
+			if _faradcore:
+				mode            = mode_paths_dict['faradcore']
 
-        if _faradcore:
-            mode            = mode_paths_dict['faradcore']
+				base_src_fldr   = mode['base_src_fldr']
+				base_dst_fldr   = mode['base_dst_fldr']
+				file_xtn        = mode['file_extn']
 
-            base_src_fldr   = mode['base_src_fldr']
-            base_dst_fldr   = mode['base_dst_fldr']
-            file_xtn        = mode['file_extn']
+				copy_files(src=_src,
+						   dst=_dst,
+						   base_src=base_src_fldr,
+						   base_dst=base_dst_fldr,
+						   file_xtnsn=file_xtn)
 
-            copy_files(src=_src,
-                       dst=_dst,
-                       base_src=base_src_fldr,
-                       base_dst=base_dst_fldr,
-                       file_xtnsn=file_xtn)
+			if _dyf:
+				mode            = mode_paths_dict['dyf']
 
-        if _dyf:
-            mode            = mode_paths_dict['dyf']
+				base_src_fldr   = mode['base_src_fldr']
+				base_dst_fldr   = mode['base_dst_fldr']
+				file_xtn        = mode['file_extn']
 
-            base_src_fldr   = mode['base_src_fldr']
-            base_dst_fldr   = mode['base_dst_fldr']
-            file_xtn        = mode['file_extn']
-
-            copy_files(src=_src,
-                       dst=_dst,
-                       base_src=base_src_fldr,
-                       base_dst=base_dst_fldr,
-                       file_xtnsn=file_xtn)
+				copy_files(src=_src,
+						   dst=_dst,
+						   base_src=base_src_fldr,
+						   base_dst=base_dst_fldr,
+						   file_xtnsn=file_xtn)
 
 
-        if not _dynamic:
-            break
+			if not _dynamic:
+				break
 
-        time.sleep(20)
-        last_called = time.time()
+			time.sleep(20)
+			last_called = time.time()
 
-        if last_called - first_called >= 14400:
-            break
+			if last_called - first_called >= 14400:
+				break
