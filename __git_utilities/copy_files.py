@@ -180,18 +180,19 @@ if __name__ == '__main__':
 	
 	DOCUMENTS_DIR		= buf.value
 	
+	GITHUB_DIR 			= os.path.join(DOCUMENTS_DIR, r'GitHub\Faraday')
+	DYNAMO_DIR			= os.path.join(APPDATA, r'Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday')
 	
-    _src        = r'D:\Libraries\Documents\GitHub\Faraday' if(mode_1 or mode_2) else \
-                    r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday'
-    _dst        = r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday' if(mode_1 or mode_2) else \
-                    r'D:\Libraries\Documents\GitHub\Faraday'
+	
+    _src        = GITHUB_DIR if(mode_1 or mode_2) else DYNAMO_DIR
+    _dst        = DYNAMO_DIR if(mode_1 or mode_2) else GITHUB_DIR
 
     # _src = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday' if (mode_1 or mode_2) else \
     #         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday'
     # _dst = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday' if (mode_1 or mode_2) else \
     #         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday'
 
-    print(f'src = {_src}, dst = {_dst}')
+    # print(f'src = {_src}, dst = {_dst}')
 
     _dyf        = True if mode_3 else False
     _nodesrc    = False if mode_3 else True
@@ -204,7 +205,7 @@ if __name__ == '__main__':
     first_called = time.time()
 	
 	if mode_4:
-		print(_src + '\n' + _dst)
+		print(f'src = {_src}, dst = {_dst}')
 		
 	else:
 		while True:
