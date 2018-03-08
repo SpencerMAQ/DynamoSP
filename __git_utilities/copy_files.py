@@ -25,6 +25,8 @@
 # print out which files would be changed if files already exist, ask for
 # user verification
 
+# TODO: test modes 2,3 before merging the branch
+
 import os
 import shutil
 import time
@@ -148,8 +150,10 @@ if __name__ == '__main__':
 
     # TODO: Test dynamic
     # -------- SET THIS FIRST --------
-	# TODO: add mode 4: only print out what the directories are
-    MOTHER_MODE = 4  	# 1: Dynamic, # 2: nodesrc [.py], core[.py] (static), # 3: dyf, static, # 4: Only print out what the directories are
+    MOTHER_MODE = 2  	# 1: Dynamic,
+                        # 2: nodesrc [.py], core[.py] (static), (Github to Dynamo)
+                        # 3: dyf, static (most common)
+                        # 4: Only print out what the directories are
     mode_1, mode_2, mode_3, mode_4  = False, False, False, False
 
     if MOTHER_MODE == 1:
@@ -164,7 +168,6 @@ if __name__ == '__main__':
     else:
         mode_4 = True
 
-	# dev test 1
 
     APPDATA = os.environ['APPDATA']
 	# USER_PATH 	= os.path.expanduser('~')	# TODO: Test @ home where Do
