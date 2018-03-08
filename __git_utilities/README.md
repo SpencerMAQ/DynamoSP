@@ -3,9 +3,9 @@ Utilities for copying files from `Github/Faraday` to `Dynamo/..../packages/Farad
 Notes to self:  
 1. Usage for `copy_files.py`  
 
-    Copy `copy_files.py` to your desktop or any folder other than Github/Packages to avoid it being copied
-    edit @ `line 150` `MOTHER_MODE = <number>`
-    Modes:
+    Copy `copy_files.py` to your desktop or any folder other than Github/Packages to avoid it being copied  
+    edit @ `line 150` `MOTHER_MODE = <number>`  
+    Modes:  
     1. Dynamic mode (like mode 2 but dynamically copies files)
        copy `.py (Faraday/src to ~extra/nodesrc)` files from Github
        including `Faraday/faradaycore` to `~extra/faradaycore`
