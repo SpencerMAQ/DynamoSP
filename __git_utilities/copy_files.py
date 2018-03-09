@@ -35,6 +35,53 @@ import ctypes.wintypes
 __version__     = '0.0.1'
 __py_version__  = 3.6
 
+# TODO: Test dynamic
+# -------- SET THIS FIRST --------
+MOTHER_MODE = 2     # 1: Dynamic,
+                    # 2: nodesrc [.py], core[.py] (static), (Github to Dynamo)
+                    # 3: dyf, static (most common)
+                    # 4: Only print out what the directories are
+mode_1, mode_2, mode_3, mode_4 = False, False, False, False
+
+if MOTHER_MODE == 1:
+    mode_1 = True
+
+elif MOTHER_MODE == 2:
+    mode_2 = True
+
+elif MOTHER_MODE == 3:
+    mode_3 = True
+
+else:
+    mode_4 = True
+
+APPDATA = os.environ['APPDATA']
+# USER_PATH 	= os.path.expanduser('~')	# TODO: Test @ home where Documents is @ D:\
+# NOTE: os.path.expanduser won't get your Documents location if it was changed, therefore:
+# https://stackoverflow.com/questions/6227590/finding-the-users-my-documents-path
+
+CSIDL_PERSONAL      = 5  # My Documents
+SHGFP_TYPE_CURRENT  = 0  # Get current, not default value
+buf                 = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
+
+DOCUMENTS_DIR   = buf.value
+
+GITHUB_DIR      = os.path.join(DOCUMENTS_DIR, r'GitHub\Faraday')
+DYNAMO_DIR      = os.path.join(APPDATA, r'Dynamo\Dynamo Revit\1.3\packages\Faraday')
+
+if not os.path.exists(DYNAMO_DIR):
+    os.makedirs(DYNAMO_DIR)
+
+_src = GITHUB_DIR if (mode_1 or mode_2) else DYNAMO_DIR
+_dst = DYNAMO_DIR if (mode_1 or mode_2) else GITHUB_DIR
+
+
+# _src = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday' if (mode_1 or mode_2) else \
+#         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday'
+# _dst = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday' if (mode_1 or mode_2) else \
+#         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday'
+
 
 def copy_files(src, dst, base_src, base_dst, file_xtnsn):
     """Copies files from Dynamo packages folder (e.g. Faraday)
@@ -148,69 +195,20 @@ if __name__ == '__main__':
                     }
          }
 
-    # TODO: Test dynamic
-    # -------- SET THIS FIRST --------
-    MOTHER_MODE = 2  	# 1: Dynamic,
-                        # 2: nodesrc [.py], core[.py] (static), (Github to Dynamo)
-                        # 3: dyf, static (most common)
-                        # 4: Only print out what the directories are
-    mode_1, mode_2, mode_3, mode_4  = False, False, False, False
-
-    if MOTHER_MODE == 1:
-        mode_1 = True
-
-    elif MOTHER_MODE == 2:
-        mode_2 = True
-
-    elif MOTHER_MODE == 3:
-        mode_3 = True
-	
-    else:
-        mode_4 = True
-
-
-    APPDATA = os.environ['APPDATA']
-	# USER_PATH 	= os.path.expanduser('~')	# TODO: Test @ home where Do
-	# NOTE: os.path.expanduser won't get your Documents location if it was changed, therefore:
-	# https://stackoverflow.com/questions/6227590/finding-the-users-my-documents-path
-    CSIDL_PERSONAL 		= 5		# My Documents
-    SHGFP_TYPE_CURRENT 	= 0   	# Get current, not default value
-    buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
-    ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
-
-    DOCUMENTS_DIR		= buf.value
-
-    GITHUB_DIR 			= os.path.join(DOCUMENTS_DIR, r'GitHub\Faraday')
-    DYNAMO_DIR			= os.path.join(APPDATA, r'Dynamo\Dynamo Revit\1.3\packages\Faraday')
-
-    if not os.path.exists(DYNAMO_DIR):
-        os.makedirs(DYNAMO_DIR)
-
-    _src        = GITHUB_DIR if(mode_1 or mode_2) else DYNAMO_DIR
-    _dst        = DYNAMO_DIR if(mode_1 or mode_2) else GITHUB_DIR
-
-    # _src = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday' if (mode_1 or mode_2) else \
-    #         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday'
-    # _dst = r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\packages\Faraday' if (mode_1 or mode_2) else \
-    #         r'D:\TeMP\1_!_!_!_TEMP\z_python dynamic file copy\Github\Faraday'
-
-    # print(f'src = {_src}, dst = {_dst}')
 
     _dyf        = True if mode_3 else False
     _nodesrc    = False if mode_3 else True
     _faradcore  = False if mode_3 else True
     _dynamic    = True if mode_1 else False
-    # print(_faradcore)
-
 
     # -----------------------
     first_called = time.time()
-	
+
     if mode_4:
         assert os.path.isdir(_src)
         assert os.path.isdir(_dst)
         print(f'src = {_src}, dst = {_dst}')
-		
+
     else:
         while True:
             if _nodesrc:
@@ -222,10 +220,10 @@ if __name__ == '__main__':
                 file_xtn        = mode['file_extn']
 
                 copy_files(src=_src,
-						   dst=_dst,
-						   base_src=base_src_fldr,
-						   base_dst=base_dst_fldr,
-						   file_xtnsn=file_xtn)
+                           dst=_dst,
+                           base_src=base_src_fldr,
+                           base_dst=base_dst_fldr,
+                           file_xtnsn=file_xtn)
 
             if _faradcore:
                 mode            = mode_paths_dict['faradcore']
@@ -236,9 +234,9 @@ if __name__ == '__main__':
 
                 copy_files(src=_src,
                            dst=_dst,
-						   base_src=base_src_fldr,
-						   base_dst=base_dst_fldr,
-						   file_xtnsn=file_xtn)
+                           base_src=base_src_fldr,
+                           base_dst=base_dst_fldr,
+                           file_xtnsn=file_xtn)
 
             if _dyf:
                 mode            = mode_paths_dict['dyf']
@@ -248,10 +246,10 @@ if __name__ == '__main__':
                 file_xtn        = mode['file_extn']
 
                 copy_files(src=_src,
-						   dst=_dst,
-						   base_src=base_src_fldr,
-						   base_dst=base_dst_fldr,
-						   file_xtnsn=file_xtn)
+                           dst=_dst,
+                           base_src=base_src_fldr,
+                           base_dst=base_dst_fldr,
+                           file_xtnsn=file_xtn)
 
 
             if not _dynamic:
