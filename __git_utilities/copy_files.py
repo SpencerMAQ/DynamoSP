@@ -37,7 +37,7 @@ __py_version__  = 3.6
 
 # TODO: Test dynamic
 # -------- SET THIS FIRST --------
-MOTHER_MODE = 2     # 1: Dynamic,
+MOTHER_MODE = 4     # 1: Dynamic,
                     # 2: nodesrc [.py], core[.py] (static), (Github to Dynamo)
                     # 3: dyf, static (most common)
                     # 4: Only print out what the directories are
