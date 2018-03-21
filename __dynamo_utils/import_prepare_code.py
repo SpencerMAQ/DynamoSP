@@ -1,0 +1,96 @@
+# copied from ladybug tools
+
+
+# TODO: change error reporting for format 'File "<string>, line 153"'
+# change to line 147 by subtracting 6 lines
+# the 6 lines are due to the try-except wrap created by this code
+
+"""Find packages from Dynamo folder and prepare the code."""
+import clr
+from System import AppDomain, Environment, IO
+
+
+def try_get_plugin_path(plugin):
+    """Try to get path to plugin folder."""
+    clr.AddReference('ProtoGeometry')
+    _loc = tuple(a.Location
+                 for a in AppDomain.CurrentDomain.GetAssemblies()
+                 if 'ProtoGeometry' in a.FullName)
+
+    try:
+        _ver = float(_loc[0].split('\\')[-2])
+    except:
+        _ver = float(_loc[0].split('\\')[-2].split(' ')[-1])
+
+    assert _ver >= 1.2, 'You need Dynamo 1.2 or higher to use this plugin!'
+
+    _appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+    _dynamo_path = '\\'.join(_loc[0].split('\\')[-4:-1])
+    # if the assembly is cached put Revit folder first, and then try to load it from core
+    _dynamo_paths = (_dynamo_path.replace('Dynamo Core', 'Dynamo Revit'),
+                    _dynamo_path.replace('Dynamo Revit', 'Dynamo Core'))
+    _settings_filename = 'DynamoSettings.xml'
+
+    pkf = []
+    for path in _dynamo_paths:
+        settings_file = IO.Path.Combine(_appdata, path, _settings_filename)
+        if IO.File.Exists(settings_file):
+            with open(settings_file, 'rb') as outf:
+                for line in outf:
+                    if line.strip().startswith('<CustomPackageFolders>'):
+                        for l in outf:
+                            if l.strip().startswith('</CustomPackageFolders>'):
+                                break
+                            else:
+                                pkf.append(l.replace('</string>', '').replace('<string>', '').strip())
+
+    for p in pkf:
+        pp = IO.Path.Combine(p, 'packages', plugin, 'extra')
+        # In case of custom folders user may put honeybee under the root folder
+        ppp = IO.Path.Combine(p, plugin, 'extra')
+        if IO.Directory.Exists(pp):
+            return pp
+        elif IO.Directory.Exists(ppp):
+            return ppp
+
+
+try:
+    plugin, filename = IN
+
+    p = try_get_plugin_path(plugin)
+
+    if not p:
+        raise ImportError('{} is not installed! Install it from package manager.'.format(plugin))
+
+    # import the file and wrap it into sys.append
+    f = IO.Path.Combine(p, 'nodesrc', filename)
+    with open(f, 'rb') as inf:
+        source = '    '.join(inf.readlines())
+
+    header = 'try:\n    import sys\n' + \
+             '    sys.path.append(r\'{}\')\n\n'.format(p) + \
+             '    sys.path.append(r\'C:\Program Files (x86)\IronPython 2.7\Lib\')\n\n' + \
+             '    '
+
+    footer = '\nexcept Exception, e:\n' + \
+             '    import traceback\n' + \
+             '    OUT = "ERROR:\\n\\t{}".format(str(e)) + \\\n' + \
+             '    "\\n\\nIf you think this is a bug submit an issue on github.\\n" + \\\n' + \
+             '    "https://github.com/ladybug-tools/honeybee-dynamo/issues\\n" +  \\\n' + \
+             '    "and include below error message:\\n\\n" + \\\n' + \
+             '    "{}".format(traceback.format_exc())\n'
+
+    OUT = header + source + footer
+
+except Exception as e:
+    import sys
+
+    sys.path.append(r'C:\Program Files (x86)\IronPython 2.7\Lib')
+    import traceback
+
+    OUT = "ERROR:\n\t{}".format(str(e)) + \
+          "\n\nIf you think this is a bug submit an issue on github.\n" + \
+          "https://github.com/SpencerMAQ/Faraday/issues\n" + \
+          "and include below error message:\n\n" + \
+          "{}".format(traceback.format_exc())
+
