@@ -86,7 +86,7 @@ except Exception as e:
 
     OUT = "ERROR:\n\t{}".format(str(e)) + \
           "\n\nIf you think this is a bug submit an issue on github.\n" + \
-          "https://github.com/ladybug-tools/honeybee-dynamo/issues\n" + \
+          "https://github.com/SpencerMAQ/Faraday/issues\n" + \
           "and include below error message:\n\n" + \
           "{}".format(traceback.format_exc())
 
