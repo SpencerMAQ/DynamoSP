@@ -14,6 +14,9 @@ provided that the TextNotes are inside any of the following View Classes:
     ViewPlan
     ViewSection
 
+    Usage:
+        Select Model Element + Elements.Type to be plugged into IN[2] to 15
+
     Args:
         _run:           (bool) True to change the Note Types,
                         False to simply view the items
@@ -32,20 +35,25 @@ provided that the TextNotes are inside any of the following View Classes:
 # TODO: use scripts from utils
 
 # from api_utils import *
+import sys
+sys.path.append(r'C:\Users\Mi\AppData\Roaming\Dynamo\Dynamo Revit\1.3\packages\Faraday\extra\faradaycore')
+
+from api_utils import DB, DM, Revit, Transaction
+
 import clr
 
-clr.AddReference('RevitAPI')
-clr.AddReference('RevitServices')
-clr.AddReference('RevitNodes')
+# clr.AddReference('RevitAPI')
+# clr.AddReference('RevitServices')
+# clr.AddReference('RevitNodes')
 
-from Autodesk.Revit.DB import *
-from RevitServices.Persistence import DocumentManager
-import Revit
+# from Autodesk.Revit.DB import *
+# from RevitServices.Persistence import DocumentManager
+# import Revit
 
 clr.ImportExtensions(Revit.Elements)
 
-doc                 = DocumentManager.Instance.CurrentDBDocument
-uidoc               = DocumentManager.Instance.CurrentUIDocument
+doc                 = DM.Instance.CurrentDBDocument
+uidoc               = DM.Instance.CurrentUIDocument
 
 
 toggle              = bool(IN[0])           # True = change types, False = view
@@ -81,12 +89,12 @@ def view_toggle():
     """if True: run only for active view, False: entire doc"""
 
     # FilteredElementCollector also takes in ICollection of ElementIds
-    return FilteredElementCollector(doc, doc.ActiveView.Id)     \
+    return DB.FilteredElementCollector(doc, doc.ActiveView.Id)     \
         if active_view_only is True                             \
-        else FilteredElementCollector(doc)
+        else DB.FilteredElementCollector(doc)
 
 
-class MyFailureHandler(IFailuresPreprocessor):
+class MyFailureHandler(DB.IFailuresPreprocessor):
     def processFailures(failures_accessor):
         failuresAccessor.DeleteAllWarnings()
 
@@ -113,17 +121,17 @@ SHOW NOTIFICATIONS FOR CHANGED TEXT
 # -------------- Road map  ------------- #
 
 # -------------- Experimental  ------------- #
-viewport_collector = view_toggle().OfCategory(BuiltInCategory.OST_Sheets).ToElementIds()
+viewport_collector = view_toggle().OfCategory(DB.BuiltInCategory.OST_Sheets).ToElementIds()
 
-view_sheet_note_collector = view_toggle().OfCategory(BuiltInCategory.OST_TextNotes)
+view_sheet_note_collector = view_toggle().OfCategory(DB.BuiltInCategory.OST_TextNotes)
 
 text_note_collector = []
 for viewport in viewport_collector:
 
 
 
-    inner_note_collector = FilteredElementCollector(doc, viewport.Id)       \
-                                .OfCategory(BuiltInCategory.OST_TextNotes)
+    inner_note_collector = DB.FilteredElementCollector(doc, viewport.Id)       \
+                                .OfCategory(DB.BuiltInCategory.OST_TextNotes)
     for inner_note in inner_note_collector:
         text_note_collector.append(inner_note)
 
@@ -138,7 +146,7 @@ if toggle is True:
     unchanged_text = []
 
     num_of_elements_before = view_toggle().                             \
-                                OfClass(clr.GetClrType(TextElement)).   \
+                                OfClass(clr.GetClrType(DB.TextElement)).   \
                                 ToElementIds().                         \
                                 Count
 
@@ -150,14 +158,14 @@ if toggle is True:
 
             text_note_type = text.TextNoteType
 
-            text_size = text_note_type.get_Parameter(BuiltInParameter.TEXT_SIZE).AsDouble()
-            text_size = UnitUtils.ConvertFromInternalUnits(text_size,
-                                                           DisplayUnitType.DUT_MILLIMETERS)
+            text_size = text_note_type.get_Parameter(DB.BuiltInParameter.TEXT_SIZE).AsDouble()
+            text_size = DB.UnitUtils.ConvertFromInternalUnits(text_size,
+                                                              DB.DisplayUnitType.DUT_MILLIMETERS)
             text_bold_param_original = text_note_type                                       \
-                                        .get_Parameter(BuiltInParameter.TEXT_STYLE_BOLD)    \
+                                        .get_Parameter(DB.BuiltInParameter.TEXT_STYLE_BOLD)    \
                                         .AsInteger()
             type_list = IN[2:]
-            text_note_font = text_note_type.get_Parameter(BuiltInParameter.TEXT_FONT).AsString()
+            text_note_font = text_note_type.get_Parameter(DB.BuiltInParameter.TEXT_FONT).AsString()
 
             if ('ISOCPEUR' in text_note_font) and (0 <= text_size <= 4.3):
                 unchanged_text.append('Text is already ISOCPEUR')
@@ -249,9 +257,9 @@ if toggle is True:
                     [text, 'Unchanged: probably too large, size={}'.format(text_size)]
                 )
 
-        num_of_elements_after = view_toggle().                          \
-                                OfClass(clr.GetClrType(TextElement)).   \
-                                ToElementIds().                         \
+        num_of_elements_after = view_toggle().                              \
+                                OfClass(clr.GetClrType(DB.TextElement)).    \
+                                ToElementIds().                             \
                                 Count
 
         # assert that num of TextNotes is the same before and after
@@ -274,11 +282,11 @@ elif toggle is False:
     for text in text_note_collector:
         text_note_type = text.TextNoteType
 
-        text_size = text_note_type.get_Parameter(BuiltInParameter.TEXT_SIZE).AsDouble()
-        text_size = UnitUtils.ConvertFromInternalUnits(text_size,
-                                                       DisplayUnitType.DUT_MILLIMETERS)
+        text_size = text_note_type.get_Parameter(DB.BuiltInParameter.TEXT_SIZE).AsDouble()
+        text_size = DB.UnitUtils.ConvertFromInternalUnits(text_size,
+                                                          DB.DisplayUnitType.DUT_MILLIMETERS)
 
-        text_note_font = text_note_type.get_Parameter(BuiltInParameter.TEXT_FONT).AsString()
+        text_note_font = text_note_type.get_Parameter(DB.BuiltInParameter.TEXT_FONT).AsString()
 
         text_info_collector.append(
             'Id: {}, Size: {}, Font: {}'.format(text.Id,
