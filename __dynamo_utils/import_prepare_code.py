@@ -1,6 +1,10 @@
 # copied from ladybug tools
 
 
+# TODO: change error reporting for format 'File "<string>, line 153"'
+# change to line 147 by subtracting 6 lines
+# the 6 lines are due to the try-except wrap created by this code
+
 """Find packages from Dynamo folder and prepare the code."""
 import clr
 from System import AppDomain, Environment, IO
